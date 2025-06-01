@@ -1,5 +1,5 @@
-import json
-       
+import json, random, time
+
 def parse_line(cur_line_str : str) -> list:
     # if ", read until next "
     # otherwise, read until next comma
@@ -16,7 +16,7 @@ def parse_line(cur_line_str : str) -> list:
             current_parse += cur_line_str[i]
     return line_content
 
-def add_to_dict(dictionary : dict, cur_line : list):
+def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
     group_size = 0
     try:
         group_size = int(cur_line[16])
@@ -42,7 +42,7 @@ def add_to_dict(dictionary : dict, cur_line : list):
         })
     else:
         # get room specific information
-        line_room_name, line_room_date, line_room_time = get_game_data(cur_line)
+        line_room_name, line_room_date, line_room_time = get_game_data(cur_line, list_of_headers)
 
         # add the group and add the player
         dictionary[cur_line[12]] = {
@@ -73,17 +73,17 @@ def add_to_dict(dictionary : dict, cur_line : list):
             }
         }
  
-def get_game_data(line_data : list) -> list:
+def get_game_data(line_data : list, list_of_headers : list) -> list:
     if len(line_data[21]) > 0:
-        return [line_data[21].split(':')[0], line_data[21], line_data[22]]
+        return [list_of_headers[21].split(':')[0], line_data[21], line_data[22]]
     elif len(line_data[23]) > 0:
-        return [line_data[23].split(':')[0], line_data[23], line_data[24]]
+        return [list_of_headers[23].split(':')[0], line_data[23], line_data[24]]
     elif len(line_data[25]) > 0:
-        return [line_data[25].split(':')[0], line_data[25], line_data[26]]
+        return [list_of_headers[25].split(':')[0], line_data[25], line_data[26]]
     elif len(line_data[27]) > 0:
-        return [line_data[27].split(':')[0], line_data[27], line_data[28]]
+        return [list_of_headers[27].split(':')[0], line_data[27], line_data[28]]
     elif len(line_data[29]) > 0:
-        return [line_data[29].split(':')[0], line_data[29], line_data[30]]
+        return [list_of_headers[29].split(':')[0], line_data[29], line_data[30]]
     else:
         return ["N/A", "N/A", "N/A"]
 
@@ -123,19 +123,47 @@ def get_game_data(line_data : list) -> list:
 
 def update_escape_groups(file_name="players.csv", out_file_name="players.json"):
     file_contents = []
+    header_list = []
     player_dictionary = {}
     with open(file_name, 'r', encoding="utf8") as file_raw:
         file_contents = file_raw.readlines()
+    header_list = parse_line(file_contents[0])
     for each_line in file_contents[1:]:
         formatted_line = parse_line(each_line)
-        add_to_dict(player_dictionary, formatted_line)
+        add_to_dict(player_dictionary, formatted_line, header_list)
     json_dict = json.dumps(player_dictionary, indent=4)
-    with open(out_file_name, 'w') as out_file:
+    with open(out_file_name, 'w', encoding="utf8") as out_file:
+        for each_key in json_dict:
+            out_file.write(each_key)
+
+def get_sample_groups(file_name="players.csv", out_file_name="players.json", quantity=3):
+    random.seed(time.time())
+    file_contents = []
+    header_list = []
+    player_dictionary = {}
+    max_iterable = 0
+    random_index = 0
+    with open(file_name, 'r', encoding="utf8") as file_raw:
+        file_contents = file_raw.readlines()
+    header_list = parse_line(file_contents[0])
+
+    if quantity < len(file_contents) - 1:
+        max_iterable = quantity
+    else:
+        max_iterable = len(file_contents) - 1
+
+    for i in range(0, max_iterable):
+        random_index = random.randint(1, len(file_contents)-1)
+        formatted_line = parse_line(file_contents[random_index])
+        add_to_dict(player_dictionary, formatted_line, header_list)
+    json_dict = json.dumps(player_dictionary, indent=4)
+    with open(out_file_name, 'w', encoding="utf8") as out_file:
         for each_key in json_dict:
             out_file.write(each_key)
 
 if __name__ == "__main__":
     update_escape_groups()
+    #get_sample_groups()
 
 
 # example output
