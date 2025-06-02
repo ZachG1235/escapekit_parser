@@ -1,6 +1,7 @@
 # folders
 
 output/
+__pycache__
 
 # files
 *.csv
