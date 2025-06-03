@@ -34,7 +34,26 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> int:
         sort_bool = not sort_bool # originally asked for least to greatest, inverting it is actually least to greatest
         found_data = dict(sorted(found_data.items(), key=lambda item: item[1][sort_key], reverse=sort_bool))
 
-    with open(f"{OUTPUT_FOLDER_PATH}/output.json", 'w') as out_file:
+    
+    out_file_str = ""
+    for each_tuple in key_tuples:
+        first_tuple, second_tuple = each_tuple
+        first_tuple = str(first_tuple).lower()
+        second_tuple = str(second_tuple).replace(' ', '_')
+        try:
+            second_tuple = second_tuple.upper()
+        except:
+            second_tuple = second_tuple
+
+        each_tuple = f"{first_tuple}{second_tuple}"
+        tuple_str = str(each_tuple)
+        for each_letter in tuple_str:
+            if each_letter.isalnum() or each_letter == '_':
+                out_file_str += each_letter
+    if len(sort_tuple) > 0:
+        first_tuple, second_tuple = sort_tuple
+        out_file_str += f"sort{first_tuple.upper()}ltg{str(second_tuple).upper()}"
+    with open(f"{OUTPUT_FOLDER_PATH}/{out_file_str}.json", 'w') as out_file:
         out_file.write(json.dumps(found_data, indent=4))
 
     return len(found_data)
@@ -56,9 +75,7 @@ def get_room_names() -> list:
             
 def tk_main():
     root = tk.Tk()
-
     root.title("EscapeKit Parser: Made by ZachG1235")
-
     for i in range(0, 10):
         root.grid_rowconfigure(i, minsize=55)
     for j in range(0, 2):
@@ -125,7 +142,7 @@ def tk_main():
     room_dropdown = tk.OptionMenu(root, room_dropdown_selection, *room_dropdown_labels)
     room_dropdown.config(font=("Sitka Small", 10))
     room_dropdown["menu"].config(font=("Sitka Small", 10))
-    def update_dropdowns():
+    def update_dropdowns(): # updates the dropdowns after parsing data
         menu = room_dropdown["menu"]
         menu.delete(0, "end")  # Clear existing options
         room_list = get_room_names()
@@ -155,7 +172,7 @@ def tk_main():
     escaped_check_box.grid(row=8, column=0, padx=10, pady=10)
 
     # result displaying label
-    result_label = tk.Label(root, text="", font=("Sitka Small", 8))
+    result_label = tk.Label(root, text="", font=("Sitka Small", 8), wraplength=200)
     result_label.grid(row=9, column=0, pady=10)
 
     # function to start the search process (activates on Update Button)
@@ -163,15 +180,16 @@ def tk_main():
         search_queries = []
         sort_query = ()
         something_selected = False
-        if room_check_bool.get():
-            room_name_to_search = room_dropdown_selection.get()
-            search_queries.append(("room", room_name_to_search))
-            something_selected = True
+
         if gm_check_bool.get():
             game_master_to_search = gm_box.get()
             if len(game_master_to_search) > 0:
                 search_queries.append(("game_master", game_master_to_search))
                 something_selected = True
+        if room_check_bool.get():
+            room_name_to_search = room_dropdown_selection.get()
+            search_queries.append(("room", room_name_to_search))
+            something_selected = True
         if gz_check_bool.get():
             group_size_to_search = gz_box.get()
             if len(group_size_to_search) > 0:
@@ -201,6 +219,7 @@ def tk_main():
             result_label.config(text=f"Could not find \"{INPUT_FOLDER_PATH}/{INPUT_FILENAME}.csv\"")
         else:
             update_dropdowns()
+            result_label.config(text=f"Successfully parsed \"{INPUT_FOLDER_PATH}/{INPUT_FILENAME}.csv\"")
         
 
     # file updater button
