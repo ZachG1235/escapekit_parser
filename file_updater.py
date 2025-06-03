@@ -1,4 +1,4 @@
-import json, random, time
+import json, random, time, os
 
 def parse_line(cur_line_str : str) -> list:
     # if ", read until next "
@@ -121,10 +121,17 @@ def get_game_data(line_data : list, list_of_headers : list) -> list:
 # 30 Room5: Time
 # 31 Event: Name
 
-def update_escape_groups(file_name="players.csv", out_file_name="players.json"):
+def update_escape_groups(file_name="players.csv", out_file_name="players.json") -> bool:
     file_contents = []
     header_list = []
     player_dictionary = {}
+
+    # verify file existing
+    if not os.path.isfile(file_name):
+        return False
+    elif not os.path.isfile(out_file_name):
+        return False
+    
     with open(file_name, 'r', encoding="utf8") as file_raw:
         file_contents = file_raw.readlines()
     header_list = parse_line(file_contents[0])
@@ -135,6 +142,8 @@ def update_escape_groups(file_name="players.csv", out_file_name="players.json"):
     with open(out_file_name, 'w', encoding="utf8") as out_file:
         for each_key in json_dict:
             out_file.write(each_key)
+    
+    return True
 
 def get_sample_groups(file_name="players.csv", out_file_name="players.json", quantity=3):
     random.seed(time.time())

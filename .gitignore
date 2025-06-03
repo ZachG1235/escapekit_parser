@@ -1,8 +1,7 @@
 # folders
 
-output/
-__pycache__
+input/*.csv
+input/*.json
+output/*.json
 
-# files
-*.csv
-*.json
+__pycache__
