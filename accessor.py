@@ -1,13 +1,24 @@
 import json, os
 import tkinter as tk
 from file_updater import parse_line, update_escape_groups
+import subprocess as sp
 
 INPUT_FOLDER_PATH = "input"
 INPUT_FILENAME = "players"
 OUTPUT_FOLDER_PATH = "output"
+GENERATE_UNIQUE_OUTFILE_NAME = True
+OUTFILE_ABBREVIATIONS = {"game_master": "gm", "room": "rm", "group_size": "gz", "escaped": "es", "TIME_REMAINING": "TM", "TRUE": "Y", "FALSE": "N"}
+DEFAULT_PR0GNAME_OPENER = "notepad.exe"
+# colors
+SEARCH_BTN_COLOR = "royalblue1"
+DELETE_BTN_COLOR = "tomato"
+PARSE_BTN_COLOR = "orchid1"
+OPEN_BTN_COLOR = "darkolivegreen1"
 
-def search_and_sort(key_tuples : list, sort_tuple : tuple) -> int:
-    with open(f"{INPUT_FOLDER_PATH}/{INPUT_FILENAME}.json", 'r') as fileObj:
+
+def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
+    input_file_path = os.path.join(INPUT_FOLDER_PATH, INPUT_FILENAME)
+    with open(f"{input_file_path}.json", 'r') as fileObj:
         json_data = json.load(fileObj)
     found_data = {}
 
@@ -34,29 +45,13 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> int:
         sort_bool = not sort_bool # originally asked for least to greatest, inverting it is actually least to greatest
         found_data = dict(sorted(found_data.items(), key=lambda item: item[1][sort_key], reverse=sort_bool))
 
-    
-    out_file_str = ""
-    for each_tuple in key_tuples:
-        first_tuple, second_tuple = each_tuple
-        first_tuple = str(first_tuple).lower()
-        second_tuple = str(second_tuple).replace(' ', '_')
-        try:
-            second_tuple = second_tuple.upper()
-        except:
-            second_tuple = second_tuple
+    out_file_str = generate_outfile_str(key_tuples, sort_tuple)
+    out_file_path = os.path.join(OUTPUT_FOLDER_PATH, out_file_str)
 
-        each_tuple = f"{first_tuple}{second_tuple}"
-        tuple_str = str(each_tuple)
-        for each_letter in tuple_str:
-            if each_letter.isalnum() or each_letter == '_':
-                out_file_str += each_letter
-    if len(sort_tuple) > 0:
-        first_tuple, second_tuple = sort_tuple
-        out_file_str += f"sort{first_tuple.upper()}ltg{str(second_tuple).upper()}"
-    with open(f"{OUTPUT_FOLDER_PATH}/{out_file_str}.json", 'w') as out_file:
+    with open(f"{out_file_path}.json", 'w') as out_file:
         out_file.write(json.dumps(found_data, indent=4))
 
-    return len(found_data)
+    return (len(found_data), out_file_str)
         
 def get_room_names() -> list:
     formatted_line = []
@@ -72,7 +67,71 @@ def get_room_names() -> list:
     else:
         room_list.append("N/A")
     return room_list
-            
+
+def generate_outfile_str(key_tuples : list, sort_tuple : tuple) -> str:
+    if not GENERATE_UNIQUE_OUTFILE_NAME:
+        return "output"
+    
+    out_file_str = ""
+    for each_tuple in key_tuples:
+        # replace _ with spaces, lower first_tuple and upper second_tuple
+        first_tuple, second_tuple = each_tuple
+        first_tuple = str(first_tuple).lower()
+        second_tuple = str(second_tuple).replace(' ', '_')
+        try:
+            second_tuple = second_tuple.upper()
+        except:
+            second_tuple = second_tuple
+
+        # concatenate them together
+        each_tuple = f"{first_tuple}{second_tuple}"
+
+        for each_letter in each_tuple:
+            # delete non alnumeric characters (keep underscores)
+            if each_letter.isalnum() or each_letter == '_':
+                out_file_str += each_letter
+
+    if len(sort_tuple) > 0:
+        first_tuple, second_tuple = sort_tuple
+        out_file_str += f"sort{first_tuple.upper()}ltg{str(second_tuple).upper()}"
+    
+    # outfilestr replacer
+    for each_key in OUTFILE_ABBREVIATIONS:
+        out_file_str = out_file_str.replace(each_key, OUTFILE_ABBREVIATIONS[each_key])
+
+    # parse out room names to make them shorter
+    # words are replaced by their first letter
+    room_list = get_room_names()
+    new_room_list = {}
+    for each_room in room_list:
+        old_room_name = each_room.upper().replace(' ', '_').replace('\'', '')
+        new_old_room_name = ""
+        new_str = ""
+
+        each_room = each_room.replace('\'', '').title()
+
+        for each_letter in old_room_name:
+            # delete non alnumeric characters (keep underscores)
+            if each_letter.isalnum() or each_letter == '_':
+                new_old_room_name += each_letter
+
+        for each_letter in each_room:
+            if each_letter.isupper():
+                new_str += each_letter  
+        new_room_list[old_room_name] = new_str
+
+    # parse out room names
+    for each_key in new_room_list:
+        out_file_str = out_file_str.replace(each_key, new_room_list[each_key])
+
+    return out_file_str
+
+
+def set_result_status(input_str : str, label : tk.Label):
+    label.config(text=input_str)
+
+
+
 def tk_main():
     root = tk.Tk()
     root.title("EscapeKit Parser: Made by ZachG1235")
@@ -175,7 +234,7 @@ def tk_main():
     result_label = tk.Label(root, text="", font=("Sitka Small", 8), wraplength=200)
     result_label.grid(row=9, column=0, pady=10)
 
-    # function to start the search process (activates on Update Button)
+    # function to start the search process (activates on Search Button)
     def search():
         search_queries = []
         sort_query = ()
@@ -192,6 +251,13 @@ def tk_main():
             something_selected = True
         if gz_check_bool.get():
             group_size_to_search = gz_box.get()
+            # error handle for non-ints
+            try:
+                int(group_size_to_search)
+            except ValueError:
+                set_result_status("Error: Please input a valid number into Group Size.", result_label)
+                set_open_button(False)
+                return
             if len(group_size_to_search) > 0:
                 search_queries.append(("group_size", group_size_to_search))
                 something_selected = True
@@ -206,30 +272,78 @@ def tk_main():
             something_selected = True
 
         if something_selected:
-            amount_found = search_and_sort(search_queries, sort_query)
-            result_label.config(text=f"Searched and found {amount_found} results")
+            amount_found, out_file_name = search_and_sort(search_queries, sort_query)
+            set_result_status(f"Searched and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
+            set_open_button(True)
         else:
-            result_label.config(text="Nothing selected")
+            set_result_status("Nothing selected", result_label)
+            set_open_button(False)
 
     def file_parse():
-        in_file_name = f"{INPUT_FOLDER_PATH}/{INPUT_FILENAME}.csv"
-        out_file_name = f"{INPUT_FOLDER_PATH}/{INPUT_FILENAME}.json"
+        in_file_name = os.path.join(INPUT_FOLDER_PATH, INPUT_FILENAME)
+        in_file_name += ".csv"
+        out_file_name = os.path.join(INPUT_FOLDER_PATH, INPUT_FILENAME)
+        out_file_name += ".json"
         success = update_escape_groups(in_file_name, out_file_name)
         if not success:
-            result_label.config(text=f"Could not find \"{INPUT_FOLDER_PATH}/{INPUT_FILENAME}.csv\"")
+            set_result_status(f"Could not find \"{in_file_name}\"", result_label)
+            set_open_button(False)
         else:
             update_dropdowns()
-            result_label.config(text=f"Successfully parsed \"{INPUT_FOLDER_PATH}/{INPUT_FILENAME}.csv\"")
+            set_result_status(f"Successfully parsed \"{in_file_name}\"", result_label)
+            set_open_button(False)
         
+    def open_file():
+        file_name = result_label.cget("text")
+        file_name = file_name.split("\"")[1]
+        sp.Popen([DEFAULT_PR0GNAME_OPENER, f"{OUTPUT_FOLDER_PATH}/{file_name}"])
+
+    def set_open_button(show_bool : bool):
+        if show_bool:
+            open_file_button.grid(row=9, column=1, sticky="w")
+        else:
+            open_file_button.grid_remove()
+
+    def clear_files():
+        files_in_directory = os.listdir(f"{OUTPUT_FOLDER_PATH}")
+        files_deleted = 0
+        for each_file in files_in_directory:
+            if each_file.endswith(".json"):
+                file_path = os.path.join(OUTPUT_FOLDER_PATH, each_file)
+                os.remove(file_path)
+                files_deleted += 1
+        if files_deleted == 0:
+            set_result_status(f"{files_deleted} files were found ending in \".json\".", result_label)
+        elif files_deleted == 1:
+            set_result_status(f"{files_deleted} file ending in \".json\" was found and deleted", result_label)
+        else:
+            set_result_status(f"{files_deleted} files ending in \".json\" were found and deleted", result_label)
+        set_open_button(False)
 
     # file updater button
-    search_button = tk.Button(root, text="Parse CSV", command=file_parse, bg="darkolivegreen1", font=("Sitka Small", 11))
-    search_button.grid(row=8, column=1, pady=10)
+    parse_button = tk.Button(root, text="Parse CSV", 
+                                 command=file_parse, 
+                                     bg=PARSE_BTN_COLOR, 
+                                        font=("Sitka Small", 11))
+    parse_button.grid(row=8, column=1, pady=10)
 
     # search button
-    search_button = tk.Button(root, text="Search", command=search, bg="royalblue1", font=("Sitka Small", 16))
+    search_button = tk.Button(root, text="Search", 
+                                  command=search, 
+                                      bg=SEARCH_BTN_COLOR, 
+                                        font=("Sitka Small", 15))
     search_button.grid(row=9, column=1, pady=10)
     
+    open_file_button = tk.Button(root, text="Open\nFile", 
+                                     command=open_file, 
+                                         bg=OPEN_BTN_COLOR,
+                                             font=("Sitka Small", 8))
+
+    file_clear_button = tk.Button(root, text="Delete\nOutput", 
+                                      command=clear_files, 
+                                          bg=DELETE_BTN_COLOR,
+                                             font=("Sitka Small", 8))
+    file_clear_button.grid(row=9, column=1, sticky="e")
 
     root.mainloop()               
 
