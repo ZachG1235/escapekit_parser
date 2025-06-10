@@ -2,11 +2,12 @@ import json, os
 import tkinter as tk
 from file_updater import parse_line, update_escape_groups
 import subprocess as sp
+from display_handler import show_results
 
 INPUT_FOLDER_PATH = "input"
 INPUT_FILENAME = "players"
 OUTPUT_FOLDER_PATH = "output"
-GENERATE_UNIQUE_OUTFILE_NAME = True
+GENERATE_UNIQUE_OUTFILE_NAME = False
 OUTFILE_ABBREVIATIONS = {"game_master": "gm", "room": "rm", "group_size": "gz", "escaped": "es", "TIME_REMAINING": "TM", "TRUE": "Y", "FALSE": "N"}
 DEFAULT_PR0GNAME_OPENER = "notepad.exe"
 # colors
@@ -296,7 +297,7 @@ def tk_main():
     def open_file():
         file_name = result_label.cget("text")
         file_name = file_name.split("\"")[1]
-        sp.Popen([DEFAULT_PR0GNAME_OPENER, f"{OUTPUT_FOLDER_PATH}/{file_name}"])
+        show_results(file_name)
 
     def set_open_button(show_bool : bool):
         if show_bool:
