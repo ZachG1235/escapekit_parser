@@ -1,5 +1,8 @@
 import json, random, time, os
 
+INPUT_FOLDER = "input"
+INPUT_FILE_NAME = "players"
+
 def parse_line(cur_line_str : str) -> list:
     # if ", read until next "
     # otherwise, read until next comma
@@ -129,8 +132,6 @@ def update_escape_groups(file_name="players.csv", out_file_name="players.json") 
     # verify file existing
     if not os.path.isfile(file_name):
         return False
-    elif not os.path.isfile(out_file_name):
-        return False
     
     with open(file_name, 'r', encoding="utf8") as file_raw:
         file_contents = file_raw.readlines()
@@ -171,8 +172,21 @@ def get_sample_groups(file_name="players.csv", out_file_name="players.json", qua
             out_file.write(each_key)
 
 if __name__ == "__main__":
-    update_escape_groups()
-    #get_sample_groups()
+    file_csv = INPUT_FILE_NAME + ".csv"
+    file_json = INPUT_FILE_NAME + ".json"
+    in_path_string = ""
+    out_path_string = ""
+    if os.path.exists(INPUT_FOLDER):
+        in_path_string = os.path.join(INPUT_FOLDER, file_csv)
+        out_path_string = os.path.join(INPUT_FOLDER, file_json)
+    else: 
+        in_path_string = file_csv
+        out_path_string = file_json
+
+    successful = update_escape_groups(file_name=in_path_string, out_file_name=out_path_string)
+    if not successful:
+        print(f"Could not find input file with path \"{in_path_string}\"")
+    
 
 
 # example output
