@@ -5,6 +5,7 @@ def show_results(file_grab_name : str):
     root = tk.Tk()
     root.title("EscapeKit Parser: Results")
 
+    # TODO refactor to support non output.json
     with open("output/output.json", 'r') as fileObj:
         json_data = json.load(fileObj)
     if len(json_data) < 1:
