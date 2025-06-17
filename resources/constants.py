@@ -1,7 +1,7 @@
 INPUT_FOLDER_PATH = "input"
 INPUT_FILENAME = "players"
 OUTPUT_FOLDER_PATH = "output"
-PYTHON_FOLDER_PATH = "resources"
+RESOURCE_FOLDER_PATH = "resources"
 GENERATE_UNIQUE_OUTFILE_NAME = False
 OUTFILE_ABBREVIATIONS = {"game_master": "gm", "room": "rm", "group_size": "gz", "escaped": "es", "TIME_REMAINING": "TM", "TRUE": "Y", "FALSE": "N"}
 DEFAULT_PR0GNAME_OPENER = "notepad.exe"
