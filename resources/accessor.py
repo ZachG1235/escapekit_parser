@@ -1,20 +1,8 @@
 import json, os
 import tkinter as tk
-from file_updater import parse_line, update_escape_groups
-import subprocess as sp
-from display_handler import show_results
-
-INPUT_FOLDER_PATH = "input"
-INPUT_FILENAME = "players"
-OUTPUT_FOLDER_PATH = "output"
-GENERATE_UNIQUE_OUTFILE_NAME = False
-OUTFILE_ABBREVIATIONS = {"game_master": "gm", "room": "rm", "group_size": "gz", "escaped": "es", "TIME_REMAINING": "TM", "TRUE": "Y", "FALSE": "N"}
-DEFAULT_PR0GNAME_OPENER = "notepad.exe"
-# colors
-SEARCH_BTN_COLOR = "royalblue1"
-DELETE_BTN_COLOR = "tomato"
-PARSE_BTN_COLOR = "orchid1"
-OPEN_BTN_COLOR = "darkolivegreen1"
+from .file_updater import parse_line, update_escape_groups
+from .display_handler import show_results
+from .constants import * # imports constants
 
 
 def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
@@ -158,6 +146,8 @@ def tk_main():
     sort_check_bool = tk.BooleanVar()
     ltg_check_bool = tk.BooleanVar()
     escaped_check_bool = tk.BooleanVar()
+    setting_viz_bool = tk.BooleanVar()
+    setting_viz_bool.set(False)
     
     # functions to toggle fields/dropdowns when associated checkbox is clicked
     def toggle_gm_box():
@@ -305,6 +295,13 @@ def tk_main():
         else:
             open_file_button.grid_remove()
 
+    def toggle_setting_visibility():
+        setting_viz_bool.set(not setting_viz_bool.get())
+        if setting_viz_bool.get(): # is true
+            print()
+
+
+
     def clear_files():
         files_in_directory = os.listdir(f"{OUTPUT_FOLDER_PATH}")
         files_deleted = 0
@@ -327,6 +324,12 @@ def tk_main():
                                      bg=PARSE_BTN_COLOR, 
                                         font=("Sitka Small", 11))
     parse_button.grid(row=8, column=1, pady=10)
+
+    advanced_settings_button = tk.Button(root, text="Settings", 
+                                            command=toggle_setting_visibility, 
+                                                bg=SETTING_BTN_COLOR, 
+                                                font=("Sitka Small", 8))
+    advanced_settings_button.grid(row=8, column=1, sticky="e")
 
     # search button
     search_button = tk.Button(root, text="Search", 

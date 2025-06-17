@@ -1,7 +1,5 @@
 import json, random, time, os
-
-INPUT_FOLDER = "input"
-INPUT_FILE_NAME = "players"
+from .constants import * # imports constants
 
 def parse_line(cur_line_str : str) -> list:
     # if ", read until next "
@@ -172,13 +170,13 @@ def get_sample_groups(file_name="players.csv", out_file_name="players.json", qua
             out_file.write(each_key)
 
 if __name__ == "__main__":
-    file_csv = INPUT_FILE_NAME + ".csv"
-    file_json = INPUT_FILE_NAME + ".json"
+    file_csv = INPUT_FILENAME + ".csv"
+    file_json = INPUT_FILENAME + ".json"
     in_path_string = ""
     out_path_string = ""
-    if os.path.exists(INPUT_FOLDER):
-        in_path_string = os.path.join(INPUT_FOLDER, file_csv)
-        out_path_string = os.path.join(INPUT_FOLDER, file_json)
+    if os.path.exists(INPUT_FOLDER_PATH):
+        in_path_string = os.path.join(INPUT_FOLDER_PATH, file_csv)
+        out_path_string = os.path.join(INPUT_FOLDER_PATH, file_json)
     else: 
         in_path_string = file_csv
         out_path_string = file_json
