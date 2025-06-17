@@ -180,7 +180,6 @@ def check_for_config_init():
 
 
 
-
 def tk_main():
     root = tk.Tk()
     root.title("EscapeKit Parser: Made by ZachG1235")
@@ -583,13 +582,13 @@ def tk_main():
 
             restore_default_btn = tk.Button(setting_root, text="Restore Defaults", 
                                         command=restore_defaults, 
-                                            bg=DELETE_BTN_COLOR, #bg=data["RESTR_CNFG_BTN_COLOR"],
+                                            bg=data["RESTR_CNFG_BTN_COLOR"],
                                                 font=("Sitka Small", 11))
             restore_default_btn.grid(row=21, column=0, pady=set_vert_padding, padx=5)
 
             save_settings_btn = tk.Button(setting_root, text="Save Current\nSettings", 
                                         command=save_current_settings, 
-                                            bg=OPEN_BTN_COLOR, #bg=data["SAVE_STNGS_BTN_COLOR"],
+                                            bg=data["SAVE_STNGS_BTN_COLOR"],
                                                 font=("Sitka Small", 11))
             save_settings_btn.grid(row=21, column=1, pady=set_vert_padding, padx=5)
 
