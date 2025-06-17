@@ -2,7 +2,7 @@ import tkinter as tk
 import json, os, webbrowser
 
 def show_results(file_grab_name : str):
-    root = tk.Tk()
+    root = tk.Toplevel()
     root.title("EscapeKit Parser: Results")
 
     # TODO refactor to support non output.json
