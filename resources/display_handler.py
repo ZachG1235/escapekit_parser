@@ -33,7 +33,7 @@ def show_results(file_grab_name : str):
     index = 0
 
     screen_height = root.winfo_screenheight()
-    max_window_height = screen_height - screen_height // 5
+    max_window_height = screen_height - screen_height // 4
     
     def url_redirect(group_thing : str):
         url = "https://www.escapekit.co/groups/" + group_thing
