@@ -77,9 +77,9 @@ def generate_outfile_str(key_tuples : list, sort_tuple : tuple) -> str:
     config_path = os.path.join("config.json")
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
-    generate_unique_outfile_name_bool = data["GENERATE_UNIQUE_OUTFILE_NAME"]
+    generate_unique_outfile_name_bool = "True" == data["GENERATE_UNIQUE_OUTFILE_NAME"] 
     outfile_abbreviations_dict = data["OUTFILE_ABBREVIATIONS"]
-
+    
     if not generate_unique_outfile_name_bool:
         return "output"
     
@@ -176,9 +176,6 @@ def check_for_config_init():
     if not os.path.isfile("config.json"):
         # create new config.json
         restore_config_default()
-        print("Config file not found. Created new Config File.")
-    else:
-        print("Config file found!")
 
 
 
@@ -330,9 +327,13 @@ def tk_main():
             something_selected = True
 
         if something_selected:
-            amount_found, out_file_name = search_and_sort(search_queries, sort_query)
-            set_result_status(f"Searched and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
-            set_open_button(True)
+            try:
+                amount_found, out_file_name = search_and_sort(search_queries, sort_query)
+                set_result_status(f"Searched and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
+                set_open_button(True)
+            except Exception as e:
+                set_result_status(str(e), result_label)
+            
         else:
             set_result_status("Nothing selected", result_label)
             set_open_button(False)
@@ -359,7 +360,7 @@ def tk_main():
             set_open_button(False)
         
     def open_file():
-        # TODO refactor the code here, need to figure out filename in different way
+        # NOTE: The way this gets the filename is unstable. Consider another way
         file_name = result_label.cget("text")
         file_name = file_name.split("\"")[1]
         show_results(file_name)
@@ -395,7 +396,6 @@ def tk_main():
                 setting_root.destroy()
 
             def save_current_settings():
-                print("TODO save settings")
                 data_dict = {}
                 data_dict["INPUT_FOLDER_PATH"] = in_fold_box.get()
                 data_dict["INPUT_FILENAME"] = in_file_box.get()
@@ -612,11 +612,11 @@ def tk_main():
                 os.remove(file_path)
                 files_deleted += 1
         if files_deleted == 0:
-            set_result_status(f"{files_deleted} files were found ending in \".json\".", result_label)
+            set_result_status(f"{files_deleted} files were found in directory \"{output_folder_path_str}\" ending in \".json\".", result_label)
         elif files_deleted == 1:
-            set_result_status(f"{files_deleted} file ending in \".json\" was found and deleted", result_label)
+            set_result_status(f"{files_deleted} file ending in \".json\" in directory \"{output_folder_path_str}\" was found and deleted", result_label)
         else:
-            set_result_status(f"{files_deleted} files ending in \".json\" were found and deleted", result_label)
+            set_result_status(f"{files_deleted} files ending in \".json\" in directory \"{output_folder_path_str}\" were found and deleted", result_label)
         set_open_button(False)
 
     # initialize constants

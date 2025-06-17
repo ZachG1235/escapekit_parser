@@ -5,8 +5,12 @@ def show_results(file_grab_name : str):
     root = tk.Toplevel()
     root.title("EscapeKit Parser: Results")
 
-    # TODO refactor to support non output.json
-    with open("output/output.json", 'r') as fileObj:
+    config_path = os.path.join("config.json")
+    with open(config_path, 'r') as config_info:
+            data = json.load(config_info)
+    output_folder = data["OUTPUT_FOLDER_PATH"]
+    
+    with open(os.path.join(output_folder, file_grab_name), 'r') as fileObj:
         json_data = json.load(fileObj)
     if len(json_data) < 1:
         return # failed
