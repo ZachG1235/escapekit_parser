@@ -359,7 +359,7 @@ def tk_main():
             set_open_button(False)
         
     def open_file():
-        # NOTE: The way this gets the filename is unstable. Consider another way
+        # TODO NOTE: The way this gets the filename is unstable. Consider another way
         file_name = result_label.cget("text")
         file_name = file_name.split("\"")[1]
         show_results(file_name)
