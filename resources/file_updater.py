@@ -1,22 +1,7 @@
 import json, random, time, os
 from .constants import * # imports constants
+from .utils import parse_line
 
-def parse_line(cur_line_str : str) -> list:
-    # if ", read until next "
-    # otherwise, read until next comma
-    line_content = []
-    current_parse = ""
-    reading_quote = False
-    for i in range(0, len(cur_line_str)):
-        if cur_line_str[i] == '\"':
-            reading_quote = not reading_quote
-        elif cur_line_str[i] == ',' and not reading_quote:
-            line_content.append(current_parse.strip())
-            current_parse = ""
-        else:
-            current_parse += cur_line_str[i]
-    line_content.append(current_parse.strip())
-    return line_content
 
 def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
     line_group_size = 0
