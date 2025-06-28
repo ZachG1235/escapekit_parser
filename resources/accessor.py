@@ -3,7 +3,8 @@ import tkinter as tk
 from .file_updater import parse_line, update_escape_groups
 from .display_handler import show_results
 from .constants import * # imports constants
-
+from .rate_compare import escaperate_display
+from .utils import get_room_names, get_value_from_cache, write_to_cache
 
 def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
     # initialize constants
@@ -47,30 +48,13 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
 
     with open(f"{out_file_path}.json", 'w') as out_file:
         out_file.write(json.dumps(found_data, indent=4))
+    
+    write_to_cache("cur_output_filename", out_file_str)
+
+    
 
     return (len(found_data), out_file_str)
         
-def get_room_names() -> list:
-    # initialize constants
-    config_path = os.path.join("config.json")
-    with open(config_path, 'r') as config_info:
-        data = json.load(config_info)
-    input_folder_path_str = data["INPUT_FOLDER_PATH"]
-    input_filename_str = data["INPUT_FILENAME"]
-
-    formatted_line = []
-    room_list = []
-    input_file_path = f"{input_folder_path_str}/{input_filename_str}.csv"
-    if os.path.isfile(input_file_path):
-        with open(f"{input_folder_path_str}/{input_filename_str}.csv", 'r') as raw_file:
-            line = raw_file.readline()
-            formatted_line = parse_line(line)
-        for each_header in formatted_line:
-            if each_header.find(": Date") != -1 and not each_header.split(':')[0] in room_list:
-                room_list.append(each_header.split(':')[0])
-    else:
-        room_list.append("N/A")
-    return room_list
 
 def generate_outfile_str(key_tuples : list, sort_tuple : tuple) -> str:
     # initialize constants
@@ -360,15 +344,19 @@ def tk_main():
         
     def open_file():
         # TODO NOTE: The way this gets the filename is unstable. Consider another way
-        file_name = result_label.cget("text")
-        file_name = file_name.split("\"")[1]
+        file_name = get_value_from_cache("cur_output_filename")
         show_results(file_name)
+
+    def open_escaperate():
+        escaperate_display()
 
     def set_open_button(show_bool : bool):
         if show_bool:
             open_file_button.grid(row=9, column=1, sticky="w")
+            open_escaperate_button.grid(row=8, column=1, sticky="w")
         else:
             open_file_button.grid_remove()
+            open_escaperate_button.grid_remove()
 
     def open_advanced_settings_window():
         # initialize constants
@@ -420,6 +408,7 @@ def tk_main():
                 data_dict["SETTING_BTN_COLOR"] = setting_btn_box.get()
                 data_dict["RESTR_CNFG_BTN_COLOR"] = restore_def_btn_box.get()
                 data_dict["SAVE_STNGS_BTN_COLOR"] = save_set_btn_box.get()
+                data_dict["OPEN_ESCAPERATE_BTN_COLOR"] = open_er_btn_box.get()
 
 
                 json_dict = json.dumps(data_dict, indent=4)
@@ -579,18 +568,23 @@ def tk_main():
             save_set_btn_box.grid(row=20, column=1, pady=set_vert_padding, padx=5)
             save_set_btn_box.insert(0, data["SAVE_STNGS_BTN_COLOR"])
             
+            open_er_btn_label = tk.Label(setting_root, text="Open Escape Rates Button Color", font=("Sitka Small", 10))
+            open_er_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            open_er_btn_label.grid(row=21, column=0, pady=set_vert_padding, padx=5)
+            open_er_btn_box.grid(row=21, column=1, pady=set_vert_padding, padx=5)
+            open_er_btn_box.insert(0, data["OPEN_ESCAPERATE_BTN_COLOR"])
 
             restore_default_btn = tk.Button(setting_root, text="Restore Defaults", 
                                         command=restore_defaults, 
                                             bg=data["RESTR_CNFG_BTN_COLOR"],
                                                 font=("Sitka Small", 11))
-            restore_default_btn.grid(row=21, column=0, pady=set_vert_padding, padx=5)
+            restore_default_btn.grid(row=22, column=0, pady=set_vert_padding, padx=5)
 
             save_settings_btn = tk.Button(setting_root, text="Save Current\nSettings", 
                                         command=save_current_settings, 
                                             bg=data["SAVE_STNGS_BTN_COLOR"],
                                                 font=("Sitka Small", 11))
-            save_settings_btn.grid(row=21, column=1, pady=set_vert_padding, padx=5)
+            save_settings_btn.grid(row=22, column=1, pady=set_vert_padding, padx=5)
 
             setting_root.bind("<Destroy>", on_destroy)
             setting_root.mainloop()
@@ -627,6 +621,7 @@ def tk_main():
     search_btn_color_str = data["SEARCH_BTN_COLOR"]
     open_btn_color_str = data["OPEN_BTN_COLOR"]
     delete_btn_color_str = data["DELETE_BTN_COLOR"]
+    escaperate_btn_color_str = data["OPEN_ESCAPERATE_BTN_COLOR"] # TODO, add to advanced settings
 
 
     # file updater button
@@ -655,6 +650,12 @@ def tk_main():
                                          bg=open_btn_color_str,
                                              font=("Sitka Small", 8))
     # open_file_button will grid when valid output is received
+
+    open_escaperate_button = tk.Button(root, text="Open\nRates", 
+                                     command=open_escaperate, 
+                                         bg=escaperate_btn_color_str,
+                                             font=("Sitka Small", 8))
+    # open_escaperate_button will grid when valid output is received
 
     file_clear_button = tk.Button(root, text="Delete\nOutput", 
                                       command=clear_files, 

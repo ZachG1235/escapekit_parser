@@ -157,7 +157,6 @@ def update_escape_groups(file_name="players.csv", out_file_name="players.json") 
     with open(out_file_name, 'w', encoding="utf8") as out_file:
         for each_key in json_dict:
             out_file.write(each_key)
-    
     return True
 
 def get_sample_groups(file_name="players.csv", out_file_name="players.json", quantity=3):

@@ -1,17 +1,20 @@
 import tkinter as tk
 import os, json
-from resources.accessor import get_room_names
+from .utils import get_room_names, get_value_from_cache
+
 
 def init_escape_rates() -> dict:
     config_path = os.path.join("config.json")
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
 
-    input_folder_path_str = data["INPUT_FOLDER_PATH"]
-    input_filename_str = data["INPUT_FILENAME"]
+    output_folder_path_str = data["OUTPUT_FOLDER_PATH"]
+    cur_output_filestr = ""
+
+    cur_output_filestr = get_value_from_cache("cur_output_filename")
     
-    input_file_path = os.path.join(input_folder_path_str, input_filename_str)
-    with open(f"{input_file_path}.json", 'r') as fileObj:
+    output_file_path = os.path.join(output_folder_path_str, cur_output_filestr)
+    with open(f"{output_file_path}.json", 'r') as fileObj:
         json_data = json.load(fileObj)
     
     gm_escape_rate_dict = {}
@@ -52,12 +55,25 @@ def init_escape_rates() -> dict:
     
     return gm_escape_rate_dict
 
-def main():
+def escaperate_display():
     root = tk.Tk()
     root.title("Escape Rate Compare")
 
-    gm_header_start_row = 4
+    gm_header_start_row = 3
     room_header_start_col = 2
+
+    main_canvas = tk.Canvas(root, borderwidth=0)
+    main_canvas.grid(row=1, column=0, columnspan=2, sticky="nsew")
+
+
+    v_scrollbar = tk.Scrollbar(root, orient="vertical", command=main_canvas.yview)
+    v_scrollbar.grid(row=1, column=7, sticky="ns")
+    root.grid_rowconfigure(1, weight=1)
+    root.grid_columnconfigure(1, weight=1)
+    main_canvas.configure(yscrollcommand=v_scrollbar.set)
+
+    inner_frame = tk.Frame(main_canvas)
+    main_canvas.create_window((0, 0), window=inner_frame, anchor="nw")
 
 
     # get top header columns
@@ -69,28 +85,28 @@ def main():
     escape_rate_data = init_escape_rates()
     game_masters = dict(sorted(escape_rate_data.items(), key=lambda item: int(item[1]["total_rooms"]), reverse=True))
     room_names = get_room_names()
+    room_names.remove("Event") # remove Event column since other data isn't passed in CSV
 
     row_index = gm_header_start_row
     col_index = room_header_start_col
-    data_row_index = row_index
+    data_row_index = row_index  
     data_col_index = col_index
-    for each_gm in game_masters:
-        gm_label = tk.Label(root, font=("Sitka Small", 10), text=each_gm)
-        gm_label.grid(row=row_index, column=0, columnspan=2, rowspan=2)
-        row_index += 2
-    
     
     room_label_list = []
     for each_room in room_names:
-        rm_label = tk.Label(root, font=("Sitka Small", 10), text=each_room)
-        rm_label.grid(row=3, column=col_index)
-        root.grid_columnconfigure(col_index, minsize=80)
+        rm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=each_room.replace(' ', "\n", 1))
+        rm_label.grid(row=1, column=col_index)
+        inner_frame.grid_columnconfigure(col_index, minsize=70)
         room_label_list.append(each_room)
         col_index += 1
-        
     
-    print(escape_rate_data["Zach Garza"])
+    for each_gm in game_masters:
+        gm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=each_gm)
+        gm_label.grid(row=row_index, column=0, columnspan=2, rowspan=2)
+        row_index += 2
     
+    colors = ["PaleTurquoise3", "PaleTurquoise1"]
+    color_index = 0
     for each_gm in game_masters:
         # get column
         for each_room in room_label_list:
@@ -104,20 +120,35 @@ def main():
             except KeyError:
                 text_input = "n/a"
                 subtitle_text = ""
-            rate_label = tk.Label(root, font=("Sitka Small", 10), text=text_input)
-            if text_input == "n/a":
-                rate_label.grid(row=data_row_index, column=data_col_index, rowspan=2) 
+            rate_label = tk.Label(inner_frame, font=("Sitka Small", 10), bg=colors[color_index % len(colors)], text=text_input)
+            # if there is no data for the room
+            if text_input == "n/a": 
+                rate_label.grid(row=data_row_index, column=data_col_index, rowspan=2, sticky="news") 
+            # otherwise, display data for room
             else:
-                rate_label.grid(row=data_row_index, column=data_col_index)
-                subtitle_label = tk.Label(root, font=("Sitka Small", 8), text=subtitle_text)
+                rate_label.grid(row=data_row_index, column=data_col_index, sticky="news")
+                subtitle_label = tk.Label(inner_frame, font=("Sitka Small", 8), text=subtitle_text, bg=colors[color_index % len(colors)])
                 data_row_index += 1
-                subtitle_label.grid(row=data_row_index, column=data_col_index)
+                subtitle_label.grid(row=data_row_index, column=data_col_index, sticky="news")
                 data_row_index -= 1
             data_col_index += 1
         data_row_index += 2
         data_col_index = room_header_start_col
+        color_index += 1
 
-    tk.mainloop()
+
+    def on_frame_configure(event):
+        main_canvas.configure(scrollregion=main_canvas.bbox("all"))
+
+    inner_frame.bind("<Configure>", on_frame_configure)
+    screen_height = root.winfo_screenheight()
+    # get 3/4 of the screen height
+    resized_screen_height = screen_height - (screen_height // 4)
+    root.update_idletasks()
+    # manual extension so rooms are displayed
+    root.geometry(f"{root.winfo_reqwidth()+100}x{resized_screen_height}")
+
+    root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    escaperate_display()

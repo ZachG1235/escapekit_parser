@@ -38,3 +38,16 @@ def parse_line(cur_line_str : str) -> list:
             current_parse += cur_line_str[i]
     line_content.append(current_parse.strip())
     return line_content
+
+def get_value_from_cache(index_to_grab : str) -> str:
+    grabbed_str = ""
+    with open("cache.txt", 'r') as cache_file:
+        cache_contents = cache_file.readlines()
+    for cache_line in cache_contents:
+        if cache_line.startswith(f"{index_to_grab}:"):
+            grabbed_str = cache_line.split(':', 1)[1].strip()
+    return grabbed_str
+
+def write_to_cache(key_to_write : str, value_to_write : str):
+    with open("cache.txt", 'w') as out_cache:
+        out_cache.write(f"{key_to_write}: {value_to_write}")
