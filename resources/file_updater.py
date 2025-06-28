@@ -27,38 +27,46 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
     
     if cur_line[12] in dictionary.keys():
         # add the player
+        minor_list = parse_line(cur_line[7])
         dictionary[cur_line[12]]["players"].update({
             len(dictionary[cur_line[12]]["players"].keys()) : {
-                    "first_name" : cur_line[0],
-                    "last_name" : cur_line[1],
-                    "email" : cur_line[2],
-                    "guardian_only" : cur_line[4] == "True",
-                    "phone_num" : cur_line[5],
-                    "date_of_birth" : cur_line[6],
-                    "minors" : parse_line(cur_line[7]),
-                    "date_added" : cur_line[8],
-                    "date_completed" : cur_line[9],
-                    "waiver_url" : cur_line[11],
-                    "group_id" : cur_line[12]
+                "first_name" : cur_line[0],
+                "last_name" : cur_line[1],
+                "email" : cur_line[2],
+                "guardian_only" : cur_line[4] == "True",
+                "phone_num" : cur_line[5],
+                "date_of_birth" : cur_line[6],
+                "minors" : minor_list,
+                "date_added" : cur_line[8],
+                "date_completed" : cur_line[9],
+                "waiver_url" : cur_line[11],
+                "group_id" : cur_line[12]
             }
         })
+        # TODO calculate group size if event afterwards
+        if dictionary[cur_line[12]]["game_master"] == "N/A":
+            if not cur_line[4] == "True":
+                dictionary[cur_line[12]]["group_size"] += 1  # if person participates, add 1
+            dictionary[cur_line[12]]["group_size"] += len(minor_list) # 1 per minor
     else:
         # get room specific information
         line_room_name, line_room_date, line_room_time = get_game_data(cur_line, list_of_headers)
+        # get list of minors
+        minor_list = parse_line(cur_line[7])
+
         # if recieved "N/A" in time, game is an event
         if line_room_time == "N/A":
-            line_group_name = line_room_name
-            line_room_name = "Event"
-            line_game_master = "Event"
-            line_escaped = False
-            line_group_size = 0
-            line_time_remaining = "N/A"
+            line_group_name = line_room_name # set the group's name to the 31st column
+            line_room_name = "Event"     # room name cannot be determined
+            line_game_master = "N/A"   # game master cannot be determined 
+            line_escaped = False         # escape status cannot be  determined 
+            line_group_size = 0          # group size initialized to 0
+            line_time_remaining = "N/A"  # time remaining cannot be determined
         else:
             line_group_name = cur_line[14]
             line_game_master = cur_line[15]
             line_escaped = cur_line[17] == "True"
             line_time_remaining = cur_line[18]
-
 
         # add the group and add the player
         dictionary[cur_line[12]] = {
@@ -88,6 +96,12 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
                 }
             }
         }
+
+        # if event, add/subtract from group_size
+        if line_game_master == "N/A":
+            if not cur_line[4] == "True":
+                dictionary[cur_line[12]]["group_size"] += 1  # if person participates, add 1
+            dictionary[cur_line[12]]["group_size"] += len(minor_list) # 1 per minor
  
 def get_game_data(line_data : list, list_of_headers : list) -> tuple:
     # returns a list [game name, game date, game time]
