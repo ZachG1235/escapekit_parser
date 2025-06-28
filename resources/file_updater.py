@@ -15,14 +15,15 @@ def parse_line(cur_line_str : str) -> list:
             current_parse = ""
         else:
             current_parse += cur_line_str[i]
+    line_content.append(current_parse.strip())
     return line_content
 
 def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
-    group_size = 0
+    line_group_size = 0
     try:
-        group_size = int(cur_line[16])
+        line_group_size = int(cur_line[16])
     except ValueError:
-        group_size = 0
+        line_group_size = 0
     
     if cur_line[12] in dictionary.keys():
         # add the player
@@ -44,15 +45,29 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
     else:
         # get room specific information
         line_room_name, line_room_date, line_room_time = get_game_data(cur_line, list_of_headers)
+        # if recieved "N/A" in time, game is an event
+        if line_room_time == "N/A":
+            line_group_name = line_room_name
+            line_room_name = "Event"
+            line_game_master = "Event"
+            line_escaped = False
+            line_group_size = 0
+            line_time_remaining = "N/A"
+        else:
+            line_group_name = cur_line[14]
+            line_game_master = cur_line[15]
+            line_escaped = cur_line[17] == "True"
+            line_time_remaining = cur_line[18]
+
 
         # add the group and add the player
         dictionary[cur_line[12]] = {
-            "group_name" : cur_line[14],
+            "group_name" : line_group_name,
             "status" : cur_line[13],
-            "game_master" : cur_line[15],
-            "group_size" : group_size,
-            "escaped" : cur_line[17] == "True",
-            "time_remaining" : cur_line[18],
+            "game_master" : line_game_master,
+            "group_size" : line_group_size,
+            "escaped" : line_escaped,
+            "time_remaining" : line_time_remaining,
             "room" : line_room_name,
             "room_date" : line_room_date,
             "room_time" : line_room_time,
@@ -74,19 +89,21 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
             }
         }
  
-def get_game_data(line_data : list, list_of_headers : list) -> list:
+def get_game_data(line_data : list, list_of_headers : list) -> tuple:
+    # returns a list [game name, game date, game time]
     if len(line_data[21]) > 0:
-        return [list_of_headers[21].split(':')[0], line_data[21], line_data[22]]
+        return (list_of_headers[21].split(':')[0], line_data[21], line_data[22])
     elif len(line_data[23]) > 0:
-        return [list_of_headers[23].split(':')[0], line_data[23], line_data[24]]
+        return (list_of_headers[23].split(':')[0], line_data[23], line_data[24])
     elif len(line_data[25]) > 0:
-        return [list_of_headers[25].split(':')[0], line_data[25], line_data[26]]
+        return (list_of_headers[25].split(':')[0], line_data[25], line_data[26])
     elif len(line_data[27]) > 0:
-        return [list_of_headers[27].split(':')[0], line_data[27], line_data[28]]
+        return (list_of_headers[27].split(':')[0], line_data[27], line_data[28])
     elif len(line_data[29]) > 0:
-        return [list_of_headers[29].split(':')[0], line_data[29], line_data[30]]
+        return (list_of_headers[29].split(':')[0], line_data[29], line_data[30])
     else:
-        return ["N/A", "N/A", "N/A"]
+        # returns event name, date, and dummy data
+        return (line_data[31], line_data[32], "N/A")
 
 # # # players.csv example format   
 # 0 First Name
