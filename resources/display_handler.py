@@ -40,8 +40,10 @@ def show_results(file_grab_name : str):
     screen_height = root.winfo_screenheight()
     max_window_height = screen_height - screen_height // 4
     
-    def url_redirect(group_thing : str):
-        url = "https://www.escapekit.co/groups/" + group_thing
+    def url_redirect(group_id : str, is_event : bool):
+        if is_event:
+            group_id += "/event"
+        url = "https://www.escapekit.co/groups/" + group_id
         webbrowser.open_new(url)
 
 
@@ -61,7 +63,8 @@ def show_results(file_grab_name : str):
                     displayable_data = str(json_data[each_group][each_data] == 1)
                 if each_data == "players":
                     # button
-                    data_button = tk.Button(root, text="Link", font=("Sitka Small", 9), command=lambda v=each_group: url_redirect(v)) 
+                    is_group = json_data[each_group]["game_master"] == "N/A"
+                    data_button = tk.Button(root, text="Link", font=("Sitka Small", 9), command=lambda v=each_group, b=is_group: url_redirect(v, b)) 
                     data_button.grid(row=row_index, column=col_index, padx=5, pady=0)
                 else:
                     data_label = tk.Label(root, text=displayable_data, font=("Sitka Small", 9))
