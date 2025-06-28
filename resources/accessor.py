@@ -343,7 +343,6 @@ def tk_main():
             set_open_button(False)
         
     def open_file():
-        # TODO NOTE: The way this gets the filename is unstable. Consider another way
         file_name = get_value_from_cache("cur_output_filename")
         show_results(file_name)
 
@@ -621,7 +620,7 @@ def tk_main():
     search_btn_color_str = data["SEARCH_BTN_COLOR"]
     open_btn_color_str = data["OPEN_BTN_COLOR"]
     delete_btn_color_str = data["DELETE_BTN_COLOR"]
-    escaperate_btn_color_str = data["OPEN_ESCAPERATE_BTN_COLOR"] # TODO, add to advanced settings
+    escaperate_btn_color_str = data["OPEN_ESCAPERATE_BTN_COLOR"] 
 
 
     # file updater button

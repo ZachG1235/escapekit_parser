@@ -28,7 +28,7 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
                 "group_id" : cur_line[12]
             }
         })
-        # TODO calculate group size if event afterwards
+        # calculate group size if event afterwards
         if dictionary[cur_line[12]]["game_master"] == "N/A":
             if not cur_line[4] == "True":
                 dictionary[cur_line[12]]["group_size"] += 1  # if person participates, add 1
