@@ -161,8 +161,26 @@ def check_for_config_init():
         # create new config.json
         restore_config_default()
 
+def is_valid_color(window, color_str):
+    try:
+        window.winfo_rgb(color_str)
+        return (True, color_str)
+    except tk.TclError:
+        return (False, "white")
 
+def output_bad_colors(wrong_colors, label):
+    if len(wrong_colors) > 0:
+        prefix_wc_str = "Color"
+        suffix_wc_str = "is"
+        if len(wrong_colors) > 1:
+            prefix_wc_str += "s"
+            suffix_wc_str = "are"
+        wrong_color_str = ""
+        for each_color in wrong_colors:
+            wrong_color_str += f"\'{each_color}\', "     
+        wrong_color_str = wrong_color_str[:-2][::-1].replace(',', "dna ,", 1)[::-1]
 
+        set_result_status(f"{prefix_wc_str} {wrong_color_str} {suffix_wc_str} invalid, please change in settings.", label)
 
 def tk_main():
     root = tk.Tk()
@@ -318,8 +336,9 @@ def tk_main():
                 set_result_status(str(e), result_label)
             
         else:
-            set_result_status("Nothing selected", result_label)
-            set_open_button(False)
+            amount_found, out_file_name = search_and_sort([], ())
+            set_result_status(f"Searched w/ no filters and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
+            set_open_button(True)
 
     def file_parse():
         # initialize constants
@@ -378,7 +397,7 @@ def tk_main():
             
             def restore_defaults():
                 restore_config_default()
-                set_result_status(f"Default settings have been restored to \"config.json\".", result_label)
+                set_result_status(f"Default settings restored to \"config.json\". Restart program for visual settings to take effect.", result_label)
                 setting_root.destroy()
 
             def save_current_settings():
@@ -399,7 +418,7 @@ def tk_main():
                 abb_dict["FALSE"] = out_file_abb_box_false.get()
                 
                 data_dict["OUTFILE_ABBREVIATIONS"] = abb_dict
-                data_dict["DEFAULT_PROGNAME_OPENER"] = def_prog_open_box.get()
+                # data_dict["DEFAULT_PROGNAME_OPENER"] = def_prog_open_box.get()
                 data_dict["SEARCH_BTN_COLOR"] = search_btn_box.get()
                 data_dict["DELETE_BTN_COLOR"] = delete_btn_box.get()
                 data_dict["PARSE_BTN_COLOR"] = parse_btn_box.get()
@@ -414,6 +433,10 @@ def tk_main():
                 with open(config_path, 'w') as out_config:
                     for each_key in json_dict:
                         out_config.write(each_key)
+                # destroy settings
+                set_result_status("Settings saved to \"config.json\". Restart program for visual settings to take effect.", result_label)
+                setting_root.destroy()
+
 
 
 
@@ -519,11 +542,11 @@ def tk_main():
 
             toggle_outfile_abb_visibility()  # will grid them if necessary 
 
-            def_prog_open_label = tk.Label(setting_root, text="Default Output File Opener", font=("Sitka Small", 10))
-            def_prog_open_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            def_prog_open_label.grid(row=13, column=0, pady=set_vert_padding, padx=5)
-            def_prog_open_box.grid(row=13, column=1, pady=set_vert_padding, padx=5)
-            def_prog_open_box.insert(0, data["DEFAULT_PROGNAME_OPENER"])
+            # def_prog_open_label = tk.Label(setting_root, text="Default Output File Opener", font=("Sitka Small", 10))
+            # def_prog_open_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            # def_prog_open_label.grid(row=13, column=0, pady=set_vert_padding, padx=5)
+            # def_prog_open_box.grid(row=13, column=1, pady=set_vert_padding, padx=5)
+            # def_prog_open_box.insert(0, data["DEFAULT_PROGNAME_OPENER"])
 
             search_btn_label = tk.Label(setting_root, text="Search Button Color", font=("Sitka Small", 10))
             search_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
@@ -573,18 +596,26 @@ def tk_main():
             open_er_btn_box.grid(row=21, column=1, pady=set_vert_padding, padx=5)
             open_er_btn_box.insert(0, data["OPEN_ESCAPERATE_BTN_COLOR"])
 
+            bad_colors = []
+            valid_color, accessed_color = is_valid_color(root, data["RESTR_CNFG_BTN_COLOR"])
+            if not valid_color:
+                bad_colors.append(data["RESTR_CNFG_BTN_COLOR"])
             restore_default_btn = tk.Button(setting_root, text="Restore Defaults", 
                                         command=restore_defaults, 
-                                            bg=data["RESTR_CNFG_BTN_COLOR"],
+                                            bg=accessed_color,
                                                 font=("Sitka Small", 11))
             restore_default_btn.grid(row=22, column=0, pady=set_vert_padding, padx=5)
 
+            valid_color, accessed_color = is_valid_color(root, data["SAVE_STNGS_BTN_COLOR"])
+            if not valid_color:
+                bad_colors.append(data["SAVE_STNGS_BTN_COLOR"])
             save_settings_btn = tk.Button(setting_root, text="Save Current\nSettings", 
                                         command=save_current_settings, 
-                                            bg=data["SAVE_STNGS_BTN_COLOR"],
+                                            bg=accessed_color,
                                                 font=("Sitka Small", 11))
             save_settings_btn.grid(row=22, column=1, pady=set_vert_padding, padx=5)
-
+            output_bad_colors(bad_colors, result_label)
+            
             setting_root.bind("<Destroy>", on_destroy)
             setting_root.mainloop()
 
@@ -620,48 +651,84 @@ def tk_main():
     search_btn_color_str = data["SEARCH_BTN_COLOR"]
     open_btn_color_str = data["OPEN_BTN_COLOR"]
     delete_btn_color_str = data["DELETE_BTN_COLOR"]
-    escaperate_btn_color_str = data["OPEN_ESCAPERATE_BTN_COLOR"] 
+    escaperate_btn_color_str = data["OPEN_ESCAPERATE_BTN_COLOR"]
+    output_folder_head = data["OUTPUT_FOLDER_PATH"]
 
 
     # file updater button
+    valid_color = False
+    wrong_colors = []
+    valid_color, accessed_color = is_valid_color(root, parse_btn_color_str)
+    if not valid_color:
+        wrong_colors.append(parse_btn_color_str)
+    
     parse_button = tk.Button(root, text="Parse CSV", 
                                  command=file_parse, 
-                                     bg=parse_btn_color_str, 
+                                     bg=accessed_color, 
                                         font=("Sitka Small", 11))
     parse_button.grid(row=8, column=1, pady=10)
 
+    valid_color, accessed_color = is_valid_color(root, setting_btn_color_str)
+    if not valid_color:
+        wrong_colors.append(setting_btn_color_str)
     # settings button
     advanced_settings_button = tk.Button(root, text="Open\nSettings", 
                                             command=open_advanced_settings_window, 
-                                                bg=setting_btn_color_str, 
+                                                bg=accessed_color, 
                                                 font=("Sitka Small", 8))
     advanced_settings_button.grid(row=8, column=1, sticky="e")
 
+    valid_color, accessed_color = is_valid_color(root, search_btn_color_str)
+    if not valid_color:
+        wrong_colors.append(search_btn_color_str)
     # search button
     search_button = tk.Button(root, text="Search", 
                                   command=search, 
-                                      bg=search_btn_color_str, 
+                                      bg=accessed_color, 
                                         font=("Sitka Small", 15))
     search_button.grid(row=9, column=1, pady=10)
     
+    valid_color, accessed_color = is_valid_color(root, open_btn_color_str)
+    if not valid_color:
+        wrong_colors.append(open_btn_color_str)
+    # open file button
     open_file_button = tk.Button(root, text="Open\nFile", 
                                      command=open_file, 
-                                         bg=open_btn_color_str,
+                                         bg=accessed_color,
                                              font=("Sitka Small", 8))
+    
     # open_file_button will grid when valid output is received
 
+    valid_color, accessed_color = is_valid_color(root, escaperate_btn_color_str)
+    if not valid_color:
+        wrong_colors.append(escaperate_btn_color_str)
     open_escaperate_button = tk.Button(root, text="Open\nRates", 
                                      command=open_escaperate, 
-                                         bg=escaperate_btn_color_str,
+                                         bg=accessed_color,
                                              font=("Sitka Small", 8))
     # open_escaperate_button will grid when valid output is received
 
+    #if output file exists, grid buttons
+    out_file = output_folder_head
+    if os.path.isfile("cache.txt"):
+        the_outfile_name = get_value_from_cache("cur_output_filename")
+        out_str = os.path.join(out_file, the_outfile_name)
+        if os.path.isfile(f"{out_str}.json"):
+            # grid the button
+            set_open_button(True)
+    
+    valid_color, accessed_color = is_valid_color(root, delete_btn_color_str)
+    if not valid_color:
+        wrong_colors.append(delete_btn_color_str)
+    # delete file button
     file_clear_button = tk.Button(root, text="Delete\nOutput", 
                                       command=clear_files, 
-                                          bg=delete_btn_color_str,
+                                          bg=accessed_color,
                                              font=("Sitka Small", 8))
     file_clear_button.grid(row=9, column=1, sticky="e")
 
+    # check if wrong colors
+    output_bad_colors(wrong_colors, result_label)
     root.mainloop()               
 
 if __name__ == "__main__":
