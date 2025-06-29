@@ -9,8 +9,10 @@ def show_results(file_grab_name : str):
     with open(config_path, 'r') as config_info:
             data = json.load(config_info)
     output_folder = data["OUTPUT_FOLDER_PATH"]
-    
-    with open(os.path.join(output_folder, file_grab_name), 'r') as fileObj:
+
+    output_filestr = os.path.join(output_folder, file_grab_name)
+
+    with open(f"{output_filestr}.json", 'r') as fileObj:
         json_data = json.load(fileObj)
     if len(json_data) < 1:
         return # failed
