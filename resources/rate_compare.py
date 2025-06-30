@@ -63,7 +63,7 @@ def escaperate_display():
     room_header_start_col = 2
 
     main_canvas = tk.Canvas(root, borderwidth=0)
-    main_canvas.grid(row=1, column=0, columnspan=2, sticky="nsew")
+    main_canvas.grid(row=1, column=0, columnspan=5, sticky="nsew")
 
 
     v_scrollbar = tk.Scrollbar(root, orient="vertical", command=main_canvas.yview)
@@ -77,10 +77,10 @@ def escaperate_display():
 
 
     # get top header columns
-    x_column_sort_label = tk.Label(root, font=("Sitka Small", 10), text="Test")
-    x_column_sort_box = tk.Entry(root, font=("Sitka Small", 10))
-    x_column_sort_label.grid(row=0, column=0)
-    x_column_sort_box.grid(row=0, column=1)
+    # x_column_sort_label = tk.Label(root, font=("Sitka Small", 10), text="Test")
+    # x_column_sort_box = tk.Entry(root, font=("Sitka Small", 10))
+    # x_column_sort_label.grid(row=0, column=0)
+    # x_column_sort_box.grid(row=0, column=1)
 
     escape_rate_data = init_escape_rates()
     game_masters = dict(sorted(escape_rate_data.items(), key=lambda item: int(item[1]["total_rooms"]), reverse=True))
@@ -91,50 +91,55 @@ def escaperate_display():
     col_index = room_header_start_col
     data_row_index = row_index  
     data_col_index = col_index
-    
+
     room_label_list = []
     for each_room in room_names:
         rm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=each_room.replace(' ', "\n", 1))
-        rm_label.grid(row=1, column=col_index)
+        rm_label.grid(row=0, column=col_index, sticky="news")
         inner_frame.grid_columnconfigure(col_index, minsize=70)
         room_label_list.append(each_room)
         col_index += 1
     
     for each_gm in game_masters:
-        gm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=each_gm)
-        gm_label.grid(row=row_index, column=0, columnspan=2, rowspan=2)
+        game_master_name = each_gm
+        if each_gm == "":
+            game_master_name = "None"
+        if not each_gm == "Event GM":
+            gm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=game_master_name)
+            gm_label.grid(row=row_index, column=0, columnspan=2, rowspan=2)
         row_index += 2
     
     colors = ["PaleTurquoise3", "PaleTurquoise1"]
     color_index = 0
     for each_gm in game_masters:
         # get column
-        for each_room in room_label_list:
-            try: 
-                escaped_count = int(escape_rate_data[each_gm][each_room]["escaped"])
-                total_count = int(escape_rate_data[each_gm][each_room]["total"])
-                rate_calc = escaped_count / total_count
-                rate_calc = round(rate_calc * 100, 2)
-                text_input = f"{rate_calc}%"
-                subtitle_text = f"{escaped_count} of {total_count}"
-            except KeyError:
-                text_input = "n/a"
-                subtitle_text = ""
-            rate_label = tk.Label(inner_frame, font=("Sitka Small", 10), bg=colors[color_index % len(colors)], text=text_input)
-            # if there is no data for the room
-            if text_input == "n/a": 
-                rate_label.grid(row=data_row_index, column=data_col_index, rowspan=2, sticky="news") 
-            # otherwise, display data for room
-            else:
-                rate_label.grid(row=data_row_index, column=data_col_index, sticky="news")
-                subtitle_label = tk.Label(inner_frame, font=("Sitka Small", 8), text=subtitle_text, bg=colors[color_index % len(colors)])
-                data_row_index += 1
-                subtitle_label.grid(row=data_row_index, column=data_col_index, sticky="news")
-                data_row_index -= 1
-            data_col_index += 1
+        if not each_gm == "Event GM":
+            for each_room in room_label_list:
+                try: 
+                    escaped_count = int(escape_rate_data[each_gm][each_room]["escaped"])
+                    total_count = int(escape_rate_data[each_gm][each_room]["total"])
+                    rate_calc = escaped_count / total_count
+                    rate_calc = round(rate_calc * 100, 2)
+                    text_input = f"{rate_calc}%"
+                    subtitle_text = f"{escaped_count} of {total_count}"
+                except KeyError:
+                    text_input = "n/a"
+                    subtitle_text = ""
+                rate_label = tk.Label(inner_frame, font=("Sitka Small", 10), bg=colors[color_index % len(colors)], text=text_input)
+                # if there is no data for the room
+                if text_input == "n/a": 
+                    rate_label.grid(row=data_row_index, column=data_col_index, rowspan=2, sticky="news") 
+                # otherwise, display data for room
+                else:
+                    rate_label.grid(row=data_row_index, column=data_col_index, sticky="news")
+                    subtitle_label = tk.Label(inner_frame, font=("Sitka Small", 8), text=subtitle_text, bg=colors[color_index % len(colors)])
+                    data_row_index += 1
+                    subtitle_label.grid(row=data_row_index, column=data_col_index, sticky="news")
+                    data_row_index -= 1
+                data_col_index += 1
+            color_index += 1
         data_row_index += 2
         data_col_index = room_header_start_col
-        color_index += 1
 
 
     def on_frame_configure(event):
