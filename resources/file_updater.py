@@ -29,7 +29,7 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
             }
         })
         # calculate group size if event afterwards
-        if dictionary[cur_line[12]]["game_master"] == "N/A":
+        if dictionary[cur_line[12]]["game_master"] == "Event GM":
             if not cur_line[4] == "True":
                 dictionary[cur_line[12]]["group_size"] += 1  # if person participates, add 1
             dictionary[cur_line[12]]["group_size"] += len(minor_list) # 1 per minor
@@ -43,7 +43,7 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
         if line_room_time == "N/A":
             line_group_name = line_room_name # set the group's name to the 31st column
             line_room_name = "Event"     # room name cannot be determined
-            line_game_master = "N/A"   # game master cannot be determined 
+            line_game_master = "Event GM"   # game master cannot be determined 
             line_escaped = False         # escape status cannot be  determined 
             line_group_size = 0          # group size initialized to 0
             line_time_remaining = "N/A"  # time remaining cannot be determined
@@ -83,7 +83,7 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
         }
 
         # if event, add/subtract from group_size
-        if line_game_master == "N/A":
+        if line_game_master == "Event GM":
             if not cur_line[4] == "True":
                 dictionary[cur_line[12]]["group_size"] += 1  # if person participates, add 1
             dictionary[cur_line[12]]["group_size"] += len(minor_list) # 1 per minor
