@@ -326,20 +326,18 @@ def tk_main():
         if escaped_check_bool.get():
             search_queries.append(("escaped", True))
             something_selected = True
-
-        if something_selected:
-            try:
+        
+        try:
+            if something_selected:
                 amount_found, out_file_name = search_and_sort(search_queries, sort_query)
                 set_result_status(f"Searched and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
+                set_open_button(True)        
+            else:
+                amount_found, out_file_name = search_and_sort([], ())
+                set_result_status(f"Searched w/ no filters and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
                 set_open_button(True)
-            except Exception as e:
-                set_result_status(str(e), result_label)
-            
-        else:
-            amount_found, out_file_name = search_and_sort([], ())
-            set_result_status(f"Searched w/ no filters and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
-            set_open_button(True)
-
+        except FileNotFoundError as e:
+            set_result_status("Parsed file could not be found.\nTry \"Parse CSV\" button?", result_label)
     def file_parse():
         # initialize constants
         config_path = os.path.join("config.json")
@@ -347,11 +345,14 @@ def tk_main():
             data = json.load(config_info)
         input_folder_path_str = data["INPUT_FOLDER_PATH"]
         input_filename_str = data["INPUT_FILENAME"]
-
+        
         in_file_name = os.path.join(input_folder_path_str, input_filename_str)
         in_file_name += ".csv"
         out_file_name = os.path.join(input_folder_path_str, input_filename_str)
         out_file_name += ".json"
+        set_result_status(f"Parsing {in_file_name}...", result_label)
+        root.update() 
+
         success = update_escape_groups(in_file_name, out_file_name)
         if not success:
             set_result_status(f"Could not find \"{in_file_name}\"", result_label)
@@ -418,7 +419,6 @@ def tk_main():
                 abb_dict["FALSE"] = out_file_abb_box_false.get()
                 
                 data_dict["OUTFILE_ABBREVIATIONS"] = abb_dict
-                # data_dict["DEFAULT_PROGNAME_OPENER"] = def_prog_open_box.get()
                 data_dict["SEARCH_BTN_COLOR"] = search_btn_box.get()
                 data_dict["DELETE_BTN_COLOR"] = delete_btn_box.get()
                 data_dict["PARSE_BTN_COLOR"] = parse_btn_box.get()
@@ -541,12 +541,6 @@ def tk_main():
             out_file_abb_box_false.insert(0, data["OUTFILE_ABBREVIATIONS"]["FALSE"])
 
             toggle_outfile_abb_visibility()  # will grid them if necessary 
-
-            # def_prog_open_label = tk.Label(setting_root, text="Default Output File Opener", font=("Sitka Small", 10))
-            # def_prog_open_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            # def_prog_open_label.grid(row=13, column=0, pady=set_vert_padding, padx=5)
-            # def_prog_open_box.grid(row=13, column=1, pady=set_vert_padding, padx=5)
-            # def_prog_open_box.insert(0, data["DEFAULT_PROGNAME_OPENER"])
 
             search_btn_label = tk.Label(setting_root, text="Search Button Color", font=("Sitka Small", 10))
             search_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
