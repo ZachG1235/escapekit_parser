@@ -2,6 +2,7 @@
 Welcome to a Python EscapeKit Parser made by @ZachG1235 on Github. This was a fun personal project of mine and I'm happy to have finished it.
 
 ## Setup Instructions 
+
 ### Download this Program
 1. On Github, download the **latest release** of this Program.
 
@@ -26,7 +27,7 @@ Welcome to a Python EscapeKit Parser made by @ZachG1235 on Github. This was a fu
 
 4. From there, you're good to go. Add search and sort filters, then press **"Search"**.
 
-## FAQ
+## Functionality Documentation
 
 ### Filter Explanation: 
 The filters are the program's main functionality. They allow further filtering than EscapeKit currently allows. The allows a prioritization of "records" in categories and genuine group lookups.
@@ -48,8 +49,10 @@ The filters are the program's main functionality. They allow further filtering t
 
 
 ### Button Explanation:
+This is a brief explanation of each button and their functionality. 
+
 * Parse CSV 
-    * Reads a `[Input Filename].csv` file located in the `Input Folder Path` and outputs it into the `Input Folder Path` as `[Input Filename].json` 
+    * Reads a `[Input Filename].csv` file located in the `Input Folder Path` and outputs it into the `Input Folder Path` as `[Input Filename].json`. This conversion allows groups to be the focal point. 
 * Search
     * Given the selected filters (or none at all), searches the file `[Input Filename].json` for groups that meet the valid filters, and exports them into the `Output Folder Path`. The name of the file depends on the checkbox `Generate Unique Outfile Name` (off by default). If off, writes search to `output.json` in `Output Folder Path`. If on, the file's name is based on what filters are supplied. 
 * Delete Output
@@ -61,18 +64,85 @@ The filters are the program's main functionality. They allow further filtering t
 * Open File 
     * Based off of the previously generated output json file in `Output Folder Path`, a list of each group is given with a hyperlink to it's corresponding EscapeKit group. 
 
-Buttons pertaining to the settings menu
+#### **Setting Buttons**
 * Save Current Settings
     * Saves all inputs in the textboxes to their corresponding value in `config.json`. **NOTE**: For some visual settings (the colors of the buttons outside of the settings menu), you must close and reopen the program for the settings to take effect. 
 * Restore Defaults
     * Deletes all settings and overwrites them to their default state using the data in `constants.py` located in `Resources Folder Path`. 
 
 ### Settings Menu Explanation
-The settings menu allows for the user to make modifications to the program. It's very import to keep in mind that changing the filepath's heirarchy is unstable and not intended to be supported.
-* 
+The settings menu allows for the user to make modifications to the program's constants. It's import to keep in mind that changing the filepath's hierarchy is unstable and is not intended to be supported.
+
+* `Input Folder Path`  
+    * Alter the path where `[Input Filename].csv` and `[Input Filename].json` are held. 
+* `Input Filename`
+    * Alters the what file to read for the input. EscapeKit downloads the player data file as `players.csv`, so by default the string is **"players"**. Upon pressing **Parse CSV**, a **.json** using the `Input Filename` is created. 
+* `Output Folder Path`
+    * Alter the path where output data is stored.  
+    **NOTE:** Upon pressing button **"Delete Output"**, all files ending in **.json** are **DELETED** from the `Output Folder Path`.
+*  `Resources Folder Path`
+    * Alter the path where the main python fails are stored.  
+    **NOTE:** It is **not** supported to modify the file **hierarchy** and should really only be used to **change the name** of this folder.
+* `Generate Unique Outfile Name`
+    * Upon pressing the Search button, the program will output a result into a file within the `Output Folder Path`.  
+    If the checkbox is disabled, all outputs will be written as **output.json** and will be overwritten each time the Search button is pressed.  
+    If the checkbox is enabled, all outputs will have a semi-unique filename that depends on what filter is selected. For example: if the "Game Master" filter has the value "Bob" in it, the output will be **game_masterBOB.json** as the filename. HOWEVER,   
+* `X Button Color`
+    * Using Tkinter's supported colors, you can **modify** any of the button's rendered colors. In order for these settings to take effect, their corresponding window must be **reopened** (you might need to **close and reopen** the program). If a color is not supported, a **status message** will be shown upon opening the **button's window**, and the incorrect color will override to **white**. 
+
+### Additional Functionality
+Some additional functionality is available, mainly for clean restarts of the program. 
+* Resetting Program
+    * If you'd like to restore the program to it's original state, you can run this command in your console within the project's directory:  
+        ```bash
+        python main.py -d
+        ``` 
+        This will remove a couple files, specifically **"input/players.json"**, **output/\*.json**, **cache.txt**, and **config.json**. Afterwards, it will run the program.  
+        **NOTE**: This use the default files and currently does not support any altered directories after the user modifies the Advanced Settings.  
+        *(Because of this, you may need to change the folders back to their original names manually in order for this command to work)*
+    * Alternatively, if you'd just like to do all the work in the previous bullet point but **NOT** run the program, use this command in your console within the project's directory:
+        ```bash
+        python main.py -donly
+        ``` 
+    
+
+## FAQ
+### What OS/software does this program require to run?
+* **Software:** Python3 (at least 3.11.4)
+* **OS:** Windows 10/11 
+
+### My program no longer works after I modified the settings/moved a folder. What next?
+You may be able to fix the problem by restoring to default settings. Make sure your input, output, and resource folder are located inside the main directory. Then run the command located in the [additional functionality section](#additional-functionality).  
+If these tactics are not working, you will most likely need to [reinstall the program](#download-this-program). 
+
+### Will macOS/Linux systems be supported?
+Currently, only Windows 10 and 11 have been tested, both work flawlessly with  default settings. Support for macOS/linux have not been verified and may need testing to verify support.
+
+### The data for "Events" aren't populating correctly. Why is that?
+With my limited knowledge on the ins and outs of EscapeKit, upon downloading the CSV for player data, some data is omitted. Specifically, Event data will only supply the player's information (for the waiver system) and omit basically all details about the game. There is no game master, there is no time remaining, there isn't even the game they played. The only column supplied is the Event Name and the day it occured.   
+With that being said, it's impossible to determine these pieces without HTML scraping or an API. Since I wanted this app to be offline (and definitely not because I don't know how to do HTML scraping nor pay money for an API), event data is filled in as best we can. Group size is actually calculated as the CSV data is being read, so inaccuracies can occur due to duplicated entries. Please consider the Group Size of an Event group to be an estimation.  
+With that being said, clicking on the hyperlink button will give you all the hidden information that was omitted in the CSV!   
 
 
-## Insert Other things here
+## Blog/Inspiration
+### Why did I create this project? 
+text  
 
-**NOTE**, add exception for no filters on Generate Unique file name  
-**NOTE**, verify if group size filter is a positive integer
+### What is the end goal? 
+text
+
+### Did I meet those goals?
+text
+
+### How long did this take?
+text
+
+
+Final Remarks
+-- 
+
+If you have any questions, feel free to drop an issue on Github! Otherwise, thank you for taking the time to investigate my personal passion project!
+
+\- Zach :)
+
+
