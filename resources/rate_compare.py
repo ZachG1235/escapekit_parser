@@ -56,7 +56,7 @@ def init_escape_rates() -> dict:
     return gm_escape_rate_dict
 
 def escaperate_display():
-    root = tk.Tk()
+    root = tk.Toplevel()
     root.title("Escape Rate Compare")
 
     gm_header_start_row = 3
