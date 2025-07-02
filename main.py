@@ -1,5 +1,5 @@
 from resources.accessor import tk_main
-import sys, os
+import sys, os, json
 
 
 if __name__ == "__main__":
@@ -12,14 +12,26 @@ if __name__ == "__main__":
             if "-donly" in arg_list:
                 run_program = False
             # reset program to original
+            # get config's folders
+            input_folder_path_str = "input"
+            input_filename_str = "players"
+            output_folder_path_str = "output"
+            config_path = os.path.join("config.json")
+            if os.path.isfile(config_path):
+                with open(config_path, 'r') as config_info:
+                    data = json.load(config_info)
+                input_folder_path_str = data["INPUT_FOLDER_PATH"]
+                input_filename_str = data["INPUT_FILENAME"]
+                output_folder_path_str = data["OUTPUT_FOLDER_PATH"]
+            
             # delete input/players.json in input
-            parsed_file = os.path.join("input", "players.json")
+            parsed_file = os.path.join(input_folder_path_str, f"{input_filename_str}.json")
             if os.path.isfile(parsed_file):
                 os.remove(parsed_file)
                 print(f"File \"{parsed_file}\" has been removed.")
 
             # delete output/*.json
-            output_folder_path_str = os.path.join("output")
+            output_folder_path_str = os.path.join(output_folder_path_str)
             files_in_directory = os.listdir(f"{output_folder_path_str}")
             for each_file in files_in_directory:
                 if each_file.endswith(".json"):
