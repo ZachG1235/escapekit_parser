@@ -307,10 +307,16 @@ def tk_main():
             something_selected = True
         if gz_check_bool.get():
             group_size_to_search = gz_box.get()
+            group_size_is_valid = True
             # error handle for non-ints
             try:
                 int(group_size_to_search)
             except ValueError:
+                group_size_is_valid = False
+            if int(group_size_to_search) < 0: # if negative number
+                group_size_is_valid = False
+            
+            if not group_size_is_valid:
                 set_result_status("Error: Please input a valid number into Group Size.", result_label)
                 set_open_button(False)
                 return
@@ -336,7 +342,7 @@ def tk_main():
                 amount_found, out_file_name = search_and_sort([], ())
                 set_result_status(f"Searched w/ no filters and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
                 set_open_button(True)
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             set_result_status("Parsed file could not be found.\nTry \"Parse CSV\" button?", result_label)
     def file_parse():
         # initialize constants
