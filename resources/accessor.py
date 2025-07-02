@@ -1,4 +1,4 @@
-import json, os
+import json, os, datetime
 import tkinter as tk
 from .file_updater import parse_line, update_escape_groups
 from .display_handler import show_results
@@ -63,9 +63,14 @@ def generate_outfile_str(key_tuples : list, sort_tuple : tuple) -> str:
         data = json.load(config_info)
     generate_unique_outfile_name_bool = "True" == data["GENERATE_UNIQUE_OUTFILE_NAME"] 
     outfile_abbreviations_dict = data["OUTFILE_ABBREVIATIONS"]
+
     
     if not generate_unique_outfile_name_bool:
         return "output"
+    elif len(key_tuples) == 0 and len(sort_tuple) == 0:
+        time_now = datetime.datetime.now()
+        time_now = time_now.strftime("%H-%M-%S_%y-%m-%d")
+        return time_now
     
     out_file_str = ""
     for each_tuple in key_tuples:
