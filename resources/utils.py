@@ -61,3 +61,9 @@ def get_frac_of_num(base_number : int, numerator : int, denominator : int, use_f
     else:
         out_num = (base_number * numerator) / denominator
     return out_num
+
+def format_output_str(output_str : str, strings_to_change : tuple) -> str:
+    current_output = output_str
+    for each_value in strings_to_change:
+        current_output = current_output.replace(";;;", each_value)
+    return current_output
