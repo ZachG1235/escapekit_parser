@@ -65,5 +65,5 @@ def get_frac_of_num(base_number : int, numerator : int, denominator : int, use_f
 def format_output_str(output_str : str, strings_to_change : tuple) -> str:
     current_output = output_str
     for each_value in strings_to_change:
-        current_output = current_output.replace(";;;", each_value)
+        current_output = current_output.replace(";;;", str(each_value), 1)
     return current_output
