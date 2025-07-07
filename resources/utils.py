@@ -51,3 +51,6 @@ def get_value_from_cache(index_to_grab : str) -> str:
 def write_to_cache(key_to_write : str, value_to_write : str):
     with open("cache.txt", 'w') as out_cache:
         out_cache.write(f"{key_to_write}: {value_to_write}")
+
+def get_mod_index(list_to_return : list, index : int):
+    return list_to_return[index % len(list_to_return)]
