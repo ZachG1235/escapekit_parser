@@ -54,3 +54,10 @@ def write_to_cache(key_to_write : str, value_to_write : str):
 
 def get_mod_index(list_to_return : list, index : int):
     return list_to_return[index % len(list_to_return)]
+
+def get_frac_of_num(base_number : int, numerator : int, denominator : int, use_floor_division=True):
+    if use_floor_division:
+        out_num = (base_number * numerator) // denominator
+    else:
+        out_num = (base_number * numerator) / denominator
+    return out_num
