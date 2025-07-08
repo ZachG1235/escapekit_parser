@@ -14,12 +14,12 @@ ESCAPE_RATE_NO_VALUE_DISPLAY_LITERAL = "n/a"
 DISPLAY_HANDLER_CUTOFF_STR = "\nOnly ;;; of ;;; groups displayed to improve performance.\nRefine your search or change max displayed groups in settings to view more.\n"
 
 # file_updater
-ERROR_NO_INPUT_FILE_PATH = "Could not find input file with path \"{in_path_string}\""
+ERROR_NO_INPUT_FILE_PATH = "Could not find input file with path \";;\""
 
 # accessor
 CACHE_CURRENT_OUTPUT_KEY = "cur_output_filename"
 CONFIG_FILE_NAME = "config.json"
-CACHE_FILE_NAME = "cache.txt"
+CACHE_FILE_NAME = "cache.json"
 SEARCH_ENUM_GAME_MASTER = "game_master"
 SEARCH_ENUM_ROOM = "room"
 SEARCH_ENUM_GROUP_SIZE = "group_size"

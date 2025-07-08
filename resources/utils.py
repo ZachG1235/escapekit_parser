@@ -42,16 +42,30 @@ def parse_line(cur_line_str : str) -> list:
 
 def get_value_from_cache(index_to_grab : str) -> str:
     grabbed_str = ""
-    with open(CACHE_FILE_NAME, 'r') as cache_file:
-        cache_contents = cache_file.readlines()
-    for cache_line in cache_contents:
-        if cache_line.startswith(f"{index_to_grab}:"):
-            grabbed_str = cache_line.split(':', 1)[1].strip()
-    return grabbed_str
+    with open(CACHE_FILE_NAME, 'r') as fileObj:
+        cache_contents = json.load(fileObj)
+    return cache_contents[index_to_grab]
+
+def create_cache():
+    cache_dict = {}
+    json_dict = json.dumps(cache_dict, indent=4)
+    with open(CACHE_FILE_NAME, 'w') as out_file:
+        for each_key in json_dict:
+            out_file.write(each_key)
 
 def write_to_cache(key_to_write : str, value_to_write : str):
+    cache_read = {}
+    if not os.path.exists(CACHE_FILE_NAME):
+        create_cache()
+
+    with open(CACHE_FILE_NAME, 'r') as fileObj:
+        cache_read = json.load(fileObj)
+    cache_read[key_to_write] = value_to_write
+
+    json_dict = json.dumps(cache_read, indent=4)
     with open(CACHE_FILE_NAME, 'w') as out_cache:
-        out_cache.write(f"{key_to_write}: {value_to_write}")
+        for each_key in json_dict:
+            out_cache.write(each_key)
 
 def get_mod_index(list_to_return : list, index : int):
     return list_to_return[index % len(list_to_return)]
