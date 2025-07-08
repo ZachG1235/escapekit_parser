@@ -1,10 +1,12 @@
 import tkinter as tk
 import json, os, webbrowser
+from .immutable_constants import *
+from .utils import format_output_str
 
 def show_results(file_grab_name: str):
     root = tk.Toplevel()
     root.title("EscapeKit Parser: Results")
-    root.geometry("970x600")  
+    root.geometry("990x600")  
 
     # scroll region
     canvas = tk.Canvas(root)
@@ -36,7 +38,6 @@ def show_results(file_grab_name: str):
 
     test_label = tk.Label(scrollable_frame, text="", font=("Sitka Small", 9))
     test_label.grid(row=0, column=0, padx=5, pady=1)
-
     first_entry = list(json_data)[0]
     index = 0
     for each_data in json_data[first_entry]:
@@ -60,7 +61,8 @@ def show_results(file_grab_name: str):
         col_index = 0
         scrollable_frame.grid_rowconfigure(row_index, minsize=25)
         if group_display_total > 100:
-            data_label = tk.Label(scrollable_frame, text=f"Only 100 of {len(json_data)} displayed to improve performance.\nRefine your search or change max displayed groups in settings to view more.\n\n", font=("Sitka Small", 13))
+            out_msg = format_output_str(DISPLAY_HANDLER_CUTOFF_STR, (100, len(json_data)))
+            data_label = tk.Label(scrollable_frame, text=out_msg, font=("Sitka Small", 13))
             data_label.grid(row=row_index, column=col_index, padx=5, pady=0, columnspan=9)
             break
         for each_data in json_data[each_group]:
@@ -69,7 +71,7 @@ def show_results(file_grab_name: str):
                 if each_data == "escaped":
                     displayable_data = str(displayable_data == 1)
                 if each_data == "players":
-                    is_group = json_data[each_group].get("game_master") == "Event GM"
+                    is_group = json_data[each_group].get("game_master") == EVENT_GM_CONVERSION_LITERAL
                     data_button = tk.Button(scrollable_frame, text="Link", font=("Sitka Small", 9),
                                             command=lambda v=each_group, b=is_group: url_redirect(v, b))
                     data_button.grid(row=row_index, column=col_index, padx=0, pady=0)

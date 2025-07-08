@@ -1,4 +1,5 @@
 import os, json
+from .immutable_constants import *
 
 def get_room_names() -> list:
     # initialize constants
@@ -41,7 +42,7 @@ def parse_line(cur_line_str : str) -> list:
 
 def get_value_from_cache(index_to_grab : str) -> str:
     grabbed_str = ""
-    with open("cache.txt", 'r') as cache_file:
+    with open(CACHE_FILE_NAME, 'r') as cache_file:
         cache_contents = cache_file.readlines()
     for cache_line in cache_contents:
         if cache_line.startswith(f"{index_to_grab}:"):
@@ -49,5 +50,25 @@ def get_value_from_cache(index_to_grab : str) -> str:
     return grabbed_str
 
 def write_to_cache(key_to_write : str, value_to_write : str):
-    with open("cache.txt", 'w') as out_cache:
+    with open(CACHE_FILE_NAME, 'w') as out_cache:
         out_cache.write(f"{key_to_write}: {value_to_write}")
+
+def get_mod_index(list_to_return : list, index : int):
+    return list_to_return[index % len(list_to_return)]
+
+def get_frac_of_num(base_number : int, numerator : int, denominator : int, use_floor_division=True):
+    if use_floor_division:
+        out_num = (base_number * numerator) // denominator
+    else:
+        out_num = (base_number * numerator) / denominator
+    return out_num
+
+def format_output_str(output_str : str, strings_to_change : tuple) -> str:
+    # casts it as a tuple
+    if isinstance(strings_to_change, str):
+        strings_to_change = (strings_to_change,)
+
+    current_output = output_str
+    for each_value in strings_to_change:
+        current_output = current_output.replace(";;;", str(each_value), 1)
+    return current_output

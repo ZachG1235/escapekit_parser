@@ -1,10 +1,11 @@
 import json, os, datetime
 import tkinter as tk
-from .file_updater import parse_line, update_escape_groups
+from .file_updater import update_escape_groups
 from .display_handler import show_results
 from .constants import * # imports constants
 from .rate_compare import escaperate_display
-from .utils import get_room_names, get_value_from_cache, write_to_cache
+from .utils import get_room_names, get_value_from_cache, write_to_cache, format_output_str
+from .immutable_constants import *
 
 def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
     # initialize constants
@@ -49,9 +50,7 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
     with open(f"{out_file_path}.json", 'w') as out_file:
         out_file.write(json.dumps(found_data, indent=4))
     
-    write_to_cache("cur_output_filename", out_file_str)
-
-    
+    write_to_cache(CACHE_CURRENT_OUTPUT_KEY, out_file_str)
 
     return (len(found_data), out_file_str)
         
@@ -130,7 +129,7 @@ def set_result_status(input_str : str, label : tk.Label):
     label.config(text=input_str)
 
 def restore_config_default():
-    config_path = os.path.join("config.json")
+    config_path = os.path.join(CONFIG_FILE_NAME)
     constants_path = os.path.join(RESOURCE_FOLDER_PATH, "constants.py")
     constants_raw = []
     with open(constants_path, 'r') as constants_file:
@@ -162,7 +161,7 @@ def restore_config_default():
 
 def check_for_config_init():
     # verify file existing
-    if not os.path.isfile("config.json"):
+    if not os.path.isfile(CONFIG_FILE_NAME):
         # create new config.json
         restore_config_default()
 
@@ -304,54 +303,55 @@ def tk_main():
         if gm_check_bool.get():
             game_master_to_search = gm_box.get()
             if len(game_master_to_search) > 0:
-                search_queries.append(("game_master", game_master_to_search))
+                search_queries.append((SEARCH_ENUM_GAME_MASTER, game_master_to_search))
                 something_selected = True
         if room_check_bool.get():
             room_name_to_search = room_dropdown_selection.get()
-            search_queries.append(("room", room_name_to_search))
+            search_queries.append((SEARCH_ENUM_ROOM, room_name_to_search))
             something_selected = True
         if gz_check_bool.get():
             group_size_to_search = gz_box.get()
             group_size_is_valid = True
             # error handle for non-ints
             try:
-                int(group_size_to_search)
+                # if negative number
+                if int(group_size_to_search) < 0:
+                    group_size_is_valid = False
             except ValueError:
-                group_size_is_valid = False
-            if int(group_size_to_search) < 0: # if negative number
                 group_size_is_valid = False
             
             if not group_size_is_valid:
-                set_result_status("Error: Please input a valid number into Group Size.", result_label)
+                set_result_status(ERROR_INVALID_GROUP_SIZE_STR, result_label)
                 set_open_button(False)
                 return
             if len(group_size_to_search) > 0:
-                search_queries.append(("group_size", group_size_to_search))
+                search_queries.append((SEARCH_ENUM_GROUP_SIZE, group_size_to_search))
                 something_selected = True
         if sort_check_bool.get():
             sort_selection = sort_dropdown_selection.get()
             least_to_greatest_bool = ltg_check_bool.get()
+            # removes "name" off of "Room name" and turns spaces into underscores
             sort_selection = sort_selection.lower().replace("name", '').strip().replace(' ', '_')
             sort_query = (sort_selection, least_to_greatest_bool)
             something_selected = True
         if escaped_check_bool.get():
-            search_queries.append(("escaped", True))
+            search_queries.append((SEARCH_ENUM_ESCAPED, True))
             something_selected = True
         
         try:
-            if something_selected:
-                amount_found, out_file_name = search_and_sort(search_queries, sort_query)
-                set_result_status(f"Searched and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
-                set_open_button(True)        
+            amount_found, out_file_name = search_and_sort(search_queries, sort_query)
+            out_msg = ""
+            if len(search_queries) == 0 and len(sort_query) == 0:
+                out_msg = format_output_str(RESULT_NO_FILTER_SEARCH_STR, (amount_found, out_file_name))
             else:
-                amount_found, out_file_name = search_and_sort([], ())
-                set_result_status(f"Searched w/ no filters and found {amount_found} results.\nSaved to \"{out_file_name}.json\".", result_label)
-                set_open_button(True)
+                out_msg = format_output_str(RESULT_WITH_FILTER_SEARCH_STR, (amount_found, out_file_name))
+            set_result_status(out_msg, result_label)
+            set_open_button(True)        
         except FileNotFoundError:
-            set_result_status("Parsed file could not be found.\nTry \"Parse CSV\" button?", result_label)
+            set_result_status(ERROR_PARSE_CSV_BUTTON_STR, result_label)
     def file_parse():
         # initialize constants
-        config_path = os.path.join("config.json")
+        config_path = os.path.join(CONFIG_FILE_NAME)
         with open(config_path, 'r') as config_info:
             data = json.load(config_info)
         input_folder_path_str = data["INPUT_FOLDER_PATH"]
@@ -361,20 +361,20 @@ def tk_main():
         in_file_name += ".csv"
         out_file_name = os.path.join(input_folder_path_str, input_filename_str)
         out_file_name += ".json"
-        set_result_status(f"Parsing {in_file_name}...", result_label)
+        set_result_status(format_output_str(STATUS_PARSING_IN_PROG_STR, (in_file_name)), result_label)
         root.update() 
 
         success = update_escape_groups(in_file_name, out_file_name)
         if not success:
-            set_result_status(f"Could not find \"{in_file_name}\"", result_label)
+            set_result_status(format_output_str(ERROR_PARSE_INVALID_FILEPATH_STR, in_file_name), result_label)
             set_open_button(False)
         else:
             update_dropdowns()
-            set_result_status(f"Successfully parsed \"{in_file_name}\"", result_label)
+            set_result_status(format_output_str(RESULT_PARSE_SUCCESS_STR, in_file_name), result_label)
             set_open_button(False)
         
     def open_file():
-        file_name = get_value_from_cache("cur_output_filename")
+        file_name = get_value_from_cache(CACHE_CURRENT_OUTPUT_KEY)
         show_results(file_name)
 
     def open_escaperate():
@@ -390,7 +390,7 @@ def tk_main():
 
     def open_advanced_settings_window():
         # initialize constants
-        config_path = os.path.join("config.json")
+        config_path = os.path.join(CONFIG_FILE_NAME)
         with open(config_path, 'r') as config_info:
             data = json.load(config_info)
 
@@ -400,16 +400,14 @@ def tk_main():
             setting_root = tk.Toplevel()
             setting_root.title("EscapeKit Parser: Settings")
             
-            # constant (doesn't change)
-            set_vert_padding = 2
-            
             def on_destroy(event):
                 if event.widget == setting_root:
                     enable_setting_viz.set(True)
             
             def restore_defaults():
                 restore_config_default()
-                set_result_status(f"Default settings restored to \"config.json\". Restart program for visual settings to take effect.", result_label)
+                out_msg = format_output_str(ADV_SET_RESTORE_DEFAULTS_STR, (CONFIG_FILE_NAME,)) # typecast as tuple
+                set_result_status(out_msg, result_label)
                 setting_root.destroy()
 
             def save_current_settings():
@@ -421,10 +419,10 @@ def tk_main():
                 data_dict["GENERATE_UNIQUE_OUTFILE_NAME"] = str(settings_guon_bool.get())
 
                 abb_dict = {}
-                abb_dict["game_master"] = out_file_abb_box_gm.get()
-                abb_dict["room"] = out_file_abb_box_rm.get()
-                abb_dict["group_size"] = out_file_abb_box_gz.get()
-                abb_dict["escaped"] = out_file_abb_box_es.get()
+                abb_dict[SEARCH_ENUM_GAME_MASTER] = out_file_abb_box_gm.get()
+                abb_dict[SEARCH_ENUM_ROOM] = out_file_abb_box_rm.get()
+                abb_dict[SEARCH_ENUM_GROUP_SIZE] = out_file_abb_box_gz.get()
+                abb_dict[SEARCH_ENUM_ESCAPED] = out_file_abb_box_es.get()
                 abb_dict["TIME_REMAINING"] = out_file_abb_box_tm.get()
                 abb_dict["TRUE"] = out_file_abb_box_true.get()
                 abb_dict["FALSE"] = out_file_abb_box_false.get()
@@ -444,8 +442,10 @@ def tk_main():
                 with open(config_path, 'w') as out_config:
                     for each_key in json_dict:
                         out_config.write(each_key)
+
                 # destroy settings
-                set_result_status("Settings saved to \"config.json\". Restart program for visual settings to take effect.", result_label)
+                out_msg = format_output_str(ADV_SET_RESTORE_DEFAULTS_STR, (CONFIG_FILE_NAME,)) # typecast as tuple
+                set_result_status(out_msg, result_label)
                 setting_root.destroy()
 
 
@@ -454,21 +454,21 @@ def tk_main():
             def toggle_outfile_abb_visibility():
                 if settings_guon_bool.get():
                     # grid the abbreviations
-                    out_file_abb_label_header.grid(row=5, column=0, pady=set_vert_padding, padx=5, columnspan=2)
-                    out_file_abb_label_gm.grid(row=6, column=0, pady=set_vert_padding, padx=5)
-                    out_file_abb_box_gm.grid(row=6, column=1, pady=set_vert_padding, padx=5)
-                    out_file_abb_label_rm.grid(row=7, column=0, pady=set_vert_padding, padx=5)
-                    out_file_abb_box_rm.grid(row=7, column=1, pady=set_vert_padding, padx=5)
-                    out_file_abb_label_gz.grid(row=8, column=0, pady=set_vert_padding, padx=5)
-                    out_file_abb_box_gz.grid(row=8, column=1, pady=set_vert_padding, padx=5)
-                    out_file_abb_label_es.grid(row=9, column=0, pady=set_vert_padding, padx=5)
-                    out_file_abb_box_es.grid(row=9, column=1, pady=set_vert_padding, padx=5)
-                    out_file_abb_label_tm.grid(row=10, column=0, pady=set_vert_padding, padx=5)
-                    out_file_abb_box_tm.grid(row=10, column=1, pady=set_vert_padding, padx=5)
-                    out_file_abb_label_true.grid(row=11, column=0, pady=set_vert_padding, padx=5)
-                    out_file_abb_box_true.grid(row=11, column=1, pady=set_vert_padding, padx=5)
-                    out_file_abb_label_false.grid(row=12, column=0, pady=set_vert_padding, padx=5)
-                    out_file_abb_box_false.grid(row=12, column=1, pady=set_vert_padding, padx=5)
+                    out_file_abb_label_header.grid(row=5, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5, columnspan=2)
+                    out_file_abb_label_gm.grid(row=6, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_gm.grid(row=6, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_rm.grid(row=7, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_rm.grid(row=7, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_gz.grid(row=8, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_gz.grid(row=8, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_es.grid(row=9, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_es.grid(row=9, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_tm.grid(row=10, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_tm.grid(row=10, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_true.grid(row=11, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_true.grid(row=11, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_false.grid(row=12, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_false.grid(row=12, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
                 else:
                     # ungrid the abbreviations
                     out_file_abb_label_header.grid_remove()
@@ -491,53 +491,53 @@ def tk_main():
 
             in_fold_label = tk.Label(setting_root, text="Input Folder Path", font=("Sitka Small", 10))
             in_fold_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            in_fold_label.grid(row=0, column=0, pady=set_vert_padding, padx=5)
-            in_fold_box.grid(row=0, column=1, pady=set_vert_padding, padx=5)
+            in_fold_label.grid(row=0, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            in_fold_box.grid(row=0, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             in_fold_box.insert(0, data["INPUT_FOLDER_PATH"])
 
             in_file_label = tk.Label(setting_root, text="Input Filename", font=("Sitka Small", 10))
             in_file_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            in_file_label.grid(row=1, column=0, pady=set_vert_padding, padx=5)
-            in_file_box.grid(row=1, column=1, pady=set_vert_padding, padx=5)
+            in_file_label.grid(row=1, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            in_file_box.grid(row=1, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             in_file_box.insert(0, data["INPUT_FILENAME"])
 
             out_fold_label = tk.Label(setting_root, text="Output Folder Path", font=("Sitka Small", 10))
             out_fold_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            out_fold_label.grid(row=2, column=0, pady=set_vert_padding, padx=5)
-            out_fold_box.grid(row=2, column=1, pady=set_vert_padding, padx=5)
+            out_fold_label.grid(row=2, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            out_fold_box.grid(row=2, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             out_fold_box.insert(0, data["OUTPUT_FOLDER_PATH"])
 
             resource_fold_label = tk.Label(setting_root, text="Resources Folder Path", font=("Sitka Small", 10))
             resource_fold_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            resource_fold_label.grid(row=3, column=0, pady=set_vert_padding, padx=5)
-            resource_fold_box.grid(row=3, column=1, pady=set_vert_padding, padx=5)
+            resource_fold_label.grid(row=3, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            resource_fold_box.grid(row=3, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             resource_fold_box.insert(0, data["RESOURCE_FOLDER_PATH"])
             
             # set settings_guon_bool to it's associated value
             settings_guon_bool.set("True" == data["GENERATE_UNIQUE_OUTFILE_NAME"])
             gen_unique_out_name_label = tk.Label(setting_root, text="Generate Unique Outfile Name", font=("Sitka Small", 10))
             gen_unique_out_name_checkbox = tk.Checkbutton(setting_root, variable=settings_guon_bool, command=toggle_outfile_abb_visibility) # type: ignore
-            gen_unique_out_name_label.grid(row=4, column=0, pady=set_vert_padding, padx=5)
-            gen_unique_out_name_checkbox.grid(row=4, column=1, pady=set_vert_padding, padx=5, sticky="w")
+            gen_unique_out_name_label.grid(row=4, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            gen_unique_out_name_checkbox.grid(row=4, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5, sticky="w")
             
             # outfile abbreviations
             out_file_abb_label_header = tk.Label(setting_root, text="Outfile Conversion Key", font=("Sitka Small", 9))
             # game_master
-            out_file_abb_label_gm = tk.Label(setting_root, text="game_master", font=("Sitka Small", 8))
+            out_file_abb_label_gm = tk.Label(setting_root, text=SEARCH_ENUM_GAME_MASTER, font=("Sitka Small", 8))
             out_file_abb_box_gm = tk.Entry(setting_root, font=("Sitka Small", 8))
-            out_file_abb_box_gm.insert(0, data["OUTFILE_ABBREVIATIONS"]["game_master"])
+            out_file_abb_box_gm.insert(0, data["OUTFILE_ABBREVIATIONS"][SEARCH_ENUM_GAME_MASTER])
             # room
-            out_file_abb_label_rm = tk.Label(setting_root, text="room", font=("Sitka Small", 8))
+            out_file_abb_label_rm = tk.Label(setting_root, text=SEARCH_ENUM_ROOM, font=("Sitka Small", 8))
             out_file_abb_box_rm = tk.Entry(setting_root, font=("Sitka Small", 8))
-            out_file_abb_box_rm.insert(0, data["OUTFILE_ABBREVIATIONS"]["room"])
+            out_file_abb_box_rm.insert(0, data["OUTFILE_ABBREVIATIONS"][SEARCH_ENUM_ROOM])
             # group_size
-            out_file_abb_label_gz = tk.Label(setting_root, text="group_size", font=("Sitka Small", 8))
+            out_file_abb_label_gz = tk.Label(setting_root, text=SEARCH_ENUM_GROUP_SIZE, font=("Sitka Small", 8))
             out_file_abb_box_gz = tk.Entry(setting_root, font=("Sitka Small", 8))
-            out_file_abb_box_gz.insert(0, data["OUTFILE_ABBREVIATIONS"]["group_size"])
+            out_file_abb_box_gz.insert(0, data["OUTFILE_ABBREVIATIONS"][SEARCH_ENUM_GROUP_SIZE])
             # escaped
-            out_file_abb_label_es = tk.Label(setting_root, text="escaped", font=("Sitka Small", 8))
+            out_file_abb_label_es = tk.Label(setting_root, text=SEARCH_ENUM_ESCAPED, font=("Sitka Small", 8))
             out_file_abb_box_es = tk.Entry(setting_root, font=("Sitka Small", 8))
-            out_file_abb_box_es.insert(0, data["OUTFILE_ABBREVIATIONS"]["escaped"])
+            out_file_abb_box_es.insert(0, data["OUTFILE_ABBREVIATIONS"][SEARCH_ENUM_ESCAPED])
             # TIME_REMAINING
             out_file_abb_label_tm = tk.Label(setting_root, text="TIME_REMAINING", font=("Sitka Small", 8))
             out_file_abb_box_tm = tk.Entry(setting_root, font=("Sitka Small", 8))
@@ -555,50 +555,50 @@ def tk_main():
 
             search_btn_label = tk.Label(setting_root, text="Search Button Color", font=("Sitka Small", 10))
             search_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            search_btn_label.grid(row=14, column=0, pady=set_vert_padding, padx=5)
-            search_btn_box.grid(row=14, column=1, pady=set_vert_padding, padx=5)
+            search_btn_label.grid(row=14, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            search_btn_box.grid(row=14, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             search_btn_box.insert(0, data["SEARCH_BTN_COLOR"])
 
             delete_btn_label = tk.Label(setting_root, text="Delete Button Color", font=("Sitka Small", 10))
             delete_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            delete_btn_label.grid(row=15, column=0, pady=set_vert_padding, padx=5)
-            delete_btn_box.grid(row=15, column=1, pady=set_vert_padding, padx=5)
+            delete_btn_label.grid(row=15, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            delete_btn_box.grid(row=15, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             delete_btn_box.insert(0, data["DELETE_BTN_COLOR"])
 
             parse_btn_label = tk.Label(setting_root, text="Parse Button Color", font=("Sitka Small", 10))
             parse_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            parse_btn_label.grid(row=16, column=0, pady=set_vert_padding, padx=5)
-            parse_btn_box.grid(row=16, column=1, pady=set_vert_padding, padx=5)
+            parse_btn_label.grid(row=16, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            parse_btn_box.grid(row=16, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             parse_btn_box.insert(0, data["PARSE_BTN_COLOR"])
 
             open_btn_label = tk.Label(setting_root, text="Open Button Color", font=("Sitka Small", 10))
             open_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            open_btn_label.grid(row=17, column=0, pady=set_vert_padding, padx=5)
-            open_btn_box.grid(row=17, column=1, pady=set_vert_padding, padx=5)
+            open_btn_label.grid(row=17, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            open_btn_box.grid(row=17, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             open_btn_box.insert(0, data["OPEN_BTN_COLOR"])
 
             setting_btn_label = tk.Label(setting_root, text="Setting Button Color", font=("Sitka Small", 10))
             setting_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            setting_btn_label.grid(row=18, column=0, pady=set_vert_padding, padx=5)
-            setting_btn_box.grid(row=18, column=1, pady=set_vert_padding, padx=5)
+            setting_btn_label.grid(row=18, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            setting_btn_box.grid(row=18, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             setting_btn_box.insert(0, data["SETTING_BTN_COLOR"])
 
-            restore_def_btn_label = tk.Label(setting_root, text="Restore Defaults Button color", font=("Sitka Small", 10))
+            restore_def_btn_label = tk.Label(setting_root, text="Restore Defaults Button Color", font=("Sitka Small", 10))
             restore_def_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            restore_def_btn_label.grid(row=19, column=0, pady=set_vert_padding, padx=5)
-            restore_def_btn_box.grid(row=19, column=1, pady=set_vert_padding, padx=5)
+            restore_def_btn_label.grid(row=19, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            restore_def_btn_box.grid(row=19, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             restore_def_btn_box.insert(0, data["RESTR_CNFG_BTN_COLOR"])
 
             save_set_btn_label = tk.Label(setting_root, text="Save Settings Button Color", font=("Sitka Small", 10))
             save_set_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            save_set_btn_label.grid(row=20, column=0, pady=set_vert_padding, padx=5)
-            save_set_btn_box.grid(row=20, column=1, pady=set_vert_padding, padx=5)
+            save_set_btn_label.grid(row=20, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            save_set_btn_box.grid(row=20, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             save_set_btn_box.insert(0, data["SAVE_STNGS_BTN_COLOR"])
             
             open_er_btn_label = tk.Label(setting_root, text="Open Escape Rates Button Color", font=("Sitka Small", 10))
             open_er_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            open_er_btn_label.grid(row=21, column=0, pady=set_vert_padding, padx=5)
-            open_er_btn_box.grid(row=21, column=1, pady=set_vert_padding, padx=5)
+            open_er_btn_label.grid(row=21, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            open_er_btn_box.grid(row=21, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             open_er_btn_box.insert(0, data["OPEN_ESCAPERATE_BTN_COLOR"])
 
             bad_colors = []
@@ -609,7 +609,7 @@ def tk_main():
                                         command=restore_defaults, 
                                             bg=accessed_color,
                                                 font=("Sitka Small", 11))
-            restore_default_btn.grid(row=22, column=0, pady=set_vert_padding, padx=5)
+            restore_default_btn.grid(row=22, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
 
             valid_color, accessed_color = is_valid_color(root, data["SAVE_STNGS_BTN_COLOR"])
             if not valid_color:
@@ -618,7 +618,7 @@ def tk_main():
                                         command=save_current_settings, 
                                             bg=accessed_color,
                                                 font=("Sitka Small", 11))
-            save_settings_btn.grid(row=22, column=1, pady=set_vert_padding, padx=5)
+            save_settings_btn.grid(row=22, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             output_bad_colors(bad_colors, result_label)
             
             setting_root.bind("<Destroy>", on_destroy)
@@ -627,7 +627,7 @@ def tk_main():
 
     def clear_files():
         # initialize constants
-        config_path = os.path.join("config.json")
+        config_path = os.path.join(CONFIG_FILE_NAME)
         with open(config_path, 'r') as config_info:
             data = json.load(config_info)
         output_folder_path_str = data["OUTPUT_FOLDER_PATH"]
@@ -639,16 +639,18 @@ def tk_main():
                 file_path = os.path.join(output_folder_path_str, each_file)
                 os.remove(file_path)
                 files_deleted += 1
+        repl_tup = (files_deleted, output_folder_path_str)
         if files_deleted == 0:
-            set_result_status(f"{files_deleted} files were found in directory \"{output_folder_path_str}\" ending in \".json\".", result_label)
+            out_msg = format_output_str(DEL_FILES_NO_FILES_STR, repl_tup)
         elif files_deleted == 1:
-            set_result_status(f"{files_deleted} file ending in \".json\" in directory \"{output_folder_path_str}\" was found and deleted", result_label)
+            out_msg = format_output_str(DEL_FILES_ONE_FILE_STR, repl_tup)
         else:
-            set_result_status(f"{files_deleted} files ending in \".json\" in directory \"{output_folder_path_str}\" were found and deleted", result_label)
+            out_msg = format_output_str(DEL_FILES_MULT_FILES_STR, repl_tup)
+        set_result_status(out_msg, result_label)
         set_open_button(False)
 
     # initialize constants
-    config_path = os.path.join("config.json")
+    config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
     parse_btn_color_str = data["PARSE_BTN_COLOR"]
@@ -715,7 +717,7 @@ def tk_main():
 
     #if output file exists, grid buttons
     out_file = output_folder_head
-    if os.path.isfile("cache.txt"):
+    if os.path.isfile(CACHE_FILE_NAME):
         the_outfile_name = get_value_from_cache("cur_output_filename")
         out_str = os.path.join(out_file, the_outfile_name)
         if os.path.isfile(f"{out_str}.json"):

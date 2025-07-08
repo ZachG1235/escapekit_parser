@@ -1,6 +1,7 @@
 import tkinter as tk
 import os, json
-from .utils import get_room_names, get_value_from_cache
+from .utils import get_room_names, get_value_from_cache, get_mod_index, get_frac_of_num
+from .immutable_constants import *
 
 
 def init_escape_rates() -> dict:
@@ -48,7 +49,8 @@ def init_escape_rates() -> dict:
         elif not room in gm_escape_rate_dict[cur_group["game_master"]]:
             gm_escape_rate_dict[gm][room] = {"total": 0, "escaped": 0, "id_cache": []}
         gm_escape_rate_dict[gm][room]["total"] += 1
-        # gm_escape_rate_dict[gm][room]["id_cache"].append(each_group)
+        if ESCAPE_RATE_CACHE_STORAGE:
+            gm_escape_rate_dict[gm][room]["id_cache"].append(each_group)
         gm_escape_rate_dict[gm]["total_rooms"] += 1
         if cur_group["escaped"] == True:
             gm_escape_rate_dict[gm][room]["escaped"] += 1
@@ -57,7 +59,7 @@ def init_escape_rates() -> dict:
 
 def escaperate_display():
     root = tk.Toplevel()
-    root.title("Escape Rate Compare")
+    root.title("Compare Escape Rates")
 
     gm_header_start_row = 3
     room_header_start_col = 2
@@ -85,7 +87,8 @@ def escaperate_display():
     escape_rate_data = init_escape_rates()
     game_masters = dict(sorted(escape_rate_data.items(), key=lambda item: int(item[1]["total_rooms"]), reverse=True))
     room_names = get_room_names()
-    room_names.remove("Event") # remove Event column since other data isn't passed in CSV
+    # remove Event column since there's not enough data in CSV
+    room_names.remove(EVENT_ROOM_NAME_CONVERSION_LITERAL) 
 
     row_index = gm_header_start_row
     col_index = room_header_start_col
@@ -103,17 +106,17 @@ def escaperate_display():
     for each_gm in game_masters:
         game_master_name = each_gm
         if each_gm == "":
-            game_master_name = "None"
-        if not each_gm == "Event GM":
+            game_master_name = EMPTY_GM_CONVERSION_LITERAL
+        if not each_gm == EVENT_GM_CONVERSION_LITERAL:
             gm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=game_master_name)
             gm_label.grid(row=row_index, column=0, columnspan=2, rowspan=2)
         row_index += 2
     
-    colors = ["PaleTurquoise3", "PaleTurquoise1"]
+
     color_index = 0
     for each_gm in game_masters:
         # get column
-        if not each_gm == "Event GM":
+        if not each_gm == EVENT_GM_CONVERSION_LITERAL:
             for each_room in room_label_list:
                 try: 
                     escaped_count = int(escape_rate_data[each_gm][each_room]["escaped"])
@@ -122,17 +125,19 @@ def escaperate_display():
                     rate_calc = round(rate_calc * 100, 2)
                     text_input = f"{rate_calc}%"
                     subtitle_text = f"{escaped_count} of {total_count}"
-                except KeyError:
-                    text_input = "n/a"
+                except KeyError: # room data does not exist
+                    text_input = ESCAPE_RATE_NO_VALUE_DISPLAY_LITERAL
                     subtitle_text = ""
-                rate_label = tk.Label(inner_frame, font=("Sitka Small", 10), bg=colors[color_index % len(colors)], text=text_input)
+                rate_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=text_input,
+                                                bg=get_mod_index(ESCAPE_RATE_BACKGROUND_COLORS, color_index))
                 # if there is no data for the room
-                if text_input == "n/a": 
+                if text_input == ESCAPE_RATE_NO_VALUE_DISPLAY_LITERAL: 
                     rate_label.grid(row=data_row_index, column=data_col_index, rowspan=2, sticky="news") 
                 # otherwise, display data for room
                 else:
                     rate_label.grid(row=data_row_index, column=data_col_index, sticky="news")
-                    subtitle_label = tk.Label(inner_frame, font=("Sitka Small", 8), text=subtitle_text, bg=colors[color_index % len(colors)])
+                    subtitle_label = tk.Label(inner_frame, font=("Sitka Small", 8), text=subtitle_text, 
+                                                    bg=get_mod_index(ESCAPE_RATE_BACKGROUND_COLORS, color_index))
                     data_row_index += 1
                     subtitle_label.grid(row=data_row_index, column=data_col_index, sticky="news")
                     data_row_index -= 1
@@ -148,7 +153,7 @@ def escaperate_display():
     inner_frame.bind("<Configure>", on_frame_configure)
     screen_height = root.winfo_screenheight()
     # get 3/4 of the screen height
-    resized_screen_height = screen_height - (screen_height // 4)
+    resized_screen_height = get_frac_of_num(screen_height, 3, 4)
     root.update_idletasks()
     # manual extension so rooms are displayed
     root.geometry(f"{root.winfo_reqwidth()+100}x{resized_screen_height}")
