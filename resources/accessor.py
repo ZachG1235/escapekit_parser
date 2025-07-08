@@ -350,6 +350,8 @@ def tk_main():
             set_open_button(True)        
         except FileNotFoundError:
             set_result_status(ERROR_PARSE_CSV_BUTTON_STR, result_label)
+
+            
     def file_parse():
         # initialize constants
         config_path = os.path.join(CONFIG_FILE_NAME)
@@ -374,6 +376,7 @@ def tk_main():
             set_result_status(format_output_str(RESULT_PARSE_SUCCESS_STR, in_file_name), result_label)
             set_open_button(False)
         
+
     def open_file():
         file_name = get_value_from_cache(CACHE_CURRENT_OUTPUT_KEY)
         config_path = os.path.join(CONFIG_FILE_NAME)
@@ -390,6 +393,7 @@ def tk_main():
     def open_escaperate():
         escaperate_display()
 
+
     def set_open_button(show_bool : bool):
         if show_bool:
             open_file_button.grid(row=9, column=1, sticky="w")
@@ -397,6 +401,7 @@ def tk_main():
         else:
             open_file_button.grid_remove()
             open_escaperate_button.grid_remove()
+
 
     def open_advanced_settings_window():
         # initialize constants
@@ -667,6 +672,9 @@ def tk_main():
         set_result_status(out_msg, result_label)
         set_open_button(False)
 
+    def test_function():
+        print("test")
+
     # initialize constants
     config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
@@ -754,6 +762,10 @@ def tk_main():
 
     # check if wrong colors
     output_bad_colors(wrong_colors, result_label)
+
+    test_button = tk.Button(root, text="test", command=test_function)
+    #test_button.grid(row=0, column=1, sticky="ne")
+
     root.mainloop()               
 
 if __name__ == "__main__":
