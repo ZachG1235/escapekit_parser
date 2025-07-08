@@ -3,7 +3,7 @@ from .immutable_constants import *
 
 def get_room_names() -> list:
     # initialize constants
-    config_path = os.path.join("config.json")
+    config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
     input_folder_path_str = data["INPUT_FOLDER_PATH"]
@@ -20,7 +20,7 @@ def get_room_names() -> list:
             if each_header.find(": Date") != -1 and not each_header.split(':')[0] in room_list:
                 room_list.append(each_header.split(':')[0])
     else:
-        room_list.append("N/A")
+        room_list.append(UTILS_UNIDENTIFYABLE_ROOM_NAME_STR)
     return room_list
 
 def parse_line(cur_line_str : str) -> list:

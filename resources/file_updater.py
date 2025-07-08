@@ -1,6 +1,6 @@
 import json, random, time, os
 from .constants import * # imports constants
-from .utils import parse_line
+from .utils import parse_line, format_output_str
 from .immutable_constants import *
 
 def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
@@ -29,10 +29,10 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
             }
         })
         # calculate group size if event afterwards
-        if dictionary[cur_line[12]]["room"] == EVENT_ROOM_NAME_CONVERSION_LITERAL:
+        if dictionary[cur_line[12]][SEARCH_ENUM_ROOM] == EVENT_ROOM_NAME_CONVERSION_LITERAL:
             if not cur_line[4] == "True":
-                dictionary[cur_line[12]]["group_size"] += 1  # if person participates, add 1
-            dictionary[cur_line[12]]["group_size"] += len(minor_list) # 1 per minor
+                dictionary[cur_line[12]][SEARCH_ENUM_GROUP_SIZE] += 1  # if person participates, add 1
+            dictionary[cur_line[12]][SEARCH_ENUM_GROUP_SIZE] += len(minor_list) # 1 per minor
     else:
         # get room specific information
         line_room_name, line_room_date, line_room_time = get_game_data(cur_line, list_of_headers)
@@ -41,11 +41,11 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
 
         # if recieved "N/A" in time, game is an event
         if line_room_time == EVENT_ROOM_TIME_CONVERSION_LITERAL:
-            line_group_name = line_room_name # set the group's name to the 31st column
-            line_room_name = EVENT_ROOM_NAME_CONVERSION_LITERAL    # room name cannot be determined
-            line_game_master = EVENT_GM_CONVERSION_LITERAL   # game master cannot be determined 
-            line_escaped = False         # escape status cannot be  determined 
-            line_group_size = 0          # group size initialized to 0
+            line_group_name = line_room_name                        # set the group's name to the 31st column
+            line_room_name = EVENT_ROOM_NAME_CONVERSION_LITERAL     # room name cannot be determined
+            line_game_master = EVENT_GM_CONVERSION_LITERAL          # game master cannot be determined 
+            line_escaped = False                                    # escape status cannot be  determined 
+            line_group_size = 0                                     # group size initialized to 0
             line_time_remaining = EVENT_TIME_RM_CONVERSION_LITERAL  # time remaining cannot be determined
         else:
             line_group_name = cur_line[14]
@@ -57,11 +57,11 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
         dictionary[cur_line[12]] = {
             "group_name" : line_group_name,
             "status" : cur_line[13],
-            "game_master" : line_game_master,
-            "group_size" : line_group_size,
-            "escaped" : line_escaped,
+            SEARCH_ENUM_GAME_MASTER : line_game_master,
+            SEARCH_ENUM_GROUP_SIZE : line_group_size,
+            SEARCH_ENUM_ESCAPED : line_escaped,
             "time_remaining" : line_time_remaining,
-            "room" : line_room_name,
+            SEARCH_ENUM_ROOM : line_room_name,
             "room_date" : line_room_date,
             "room_time" : line_room_time,
             "players" : {
@@ -85,8 +85,8 @@ def add_to_dict(dictionary : dict, cur_line : list, list_of_headers : list):
         # if event, add/subtract from group_size
         if line_room_name == EVENT_ROOM_NAME_CONVERSION_LITERAL:
             if not cur_line[4] == "True":
-                dictionary[cur_line[12]]["group_size"] += 1  # if person participates, add 1
-            dictionary[cur_line[12]]["group_size"] += len(minor_list) # 1 per minor
+                dictionary[cur_line[12]][SEARCH_ENUM_GROUP_SIZE] += 1  # if person participates, add 1
+            dictionary[cur_line[12]][SEARCH_ENUM_GROUP_SIZE] += len(minor_list) # 1 per minor
  
 def get_game_data(line_data : list, list_of_headers : list) -> tuple:
     # returns a list [game name, game date, game time]
@@ -198,7 +198,7 @@ if __name__ == "__main__":
 
     successful = update_escape_groups(file_name=in_path_string, out_file_name=out_path_string)
     if not successful:
-        print(f"Could not find input file with path \"{in_path_string}\"")
+        print(format_output_str(ERROR_NO_INPUT_FILE_PATH, tuple(in_path_string)))
     
 
 

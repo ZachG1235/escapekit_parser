@@ -1,5 +1,6 @@
 from resources.accessor import tk_main
 import sys, os, json
+from resources.immutable_constants import *
 
 
 if __name__ == "__main__":
@@ -7,7 +8,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         arg_list = []
         for arg in sys.argv[1:]:
-            arg_list.append(arg)
+            arg_list.append(arg.lower())
         if "-donly" in arg_list or "-d" in arg_list:
             if "-donly" in arg_list:
                 run_program = False
@@ -16,7 +17,7 @@ if __name__ == "__main__":
             input_folder_path_str = "input"
             input_filename_str = "players"
             output_folder_path_str = "output"
-            config_path = os.path.join("config.json")
+            config_path = os.path.join(CONFIG_FILE_NAME)
             if os.path.isfile(config_path):
                 with open(config_path, 'r') as config_info:
                     data = json.load(config_info)
@@ -41,13 +42,13 @@ if __name__ == "__main__":
                         print(f"File \"{file_path}\" has been removed.")
 
             # delete cache.txt
-            cache_file = os.path.join("cache.txt")
+            cache_file = os.path.join(CACHE_FILE_NAME)
             if os.path.isfile(cache_file):
                 os.remove(cache_file)
                 print(f"File \"{cache_file}\" has been removed.")
 
             # delete config.json
-            config_file = os.path.join("config.json")
+            config_file = os.path.join(CONFIG_FILE_NAME)
             if os.path.isfile(config_file):
                 os.remove(config_file)
                 print(f"File \"{config_file}\" has been removed.")

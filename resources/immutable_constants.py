@@ -11,12 +11,15 @@ ESCAPE_RATE_BACKGROUND_COLORS = ["PaleTurquoise3", "PaleTurquoise1"]
 ESCAPE_RATE_NO_VALUE_DISPLAY_LITERAL = "n/a"
 
 # display_handler
-DISPLAY_HANDLER_CUTOFF_STR = "Only ;;; of ;;; groups displayed to improve performance.\nRefine your search or change max displayed groups in settings to view more.\n\n"
+DISPLAY_HANDLER_CUTOFF_STR = "\nOnly ;;; of ;;; groups displayed to improve performance.\nRefine your search or change max displayed groups in settings to view more.\n"
+
+# file_updater
+ERROR_NO_INPUT_FILE_PATH = "Could not find input file with path \"{in_path_string}\""
 
 # accessor
 CACHE_CURRENT_OUTPUT_KEY = "cur_output_filename"
 CONFIG_FILE_NAME = "config.json"
-CACHE_FILE_NAME = "cache.txt"
+CACHE_FILE_NAME = "cached.txt"
 SEARCH_ENUM_GAME_MASTER = "game_master"
 SEARCH_ENUM_ROOM = "room"
 SEARCH_ENUM_GROUP_SIZE = "group_size"
@@ -33,3 +36,6 @@ ADV_SET_RESTORE_DEFAULTS_STR = "Default settings restored to \";;;\". Restart pr
 DEL_FILES_NO_FILES_STR = ";;; files were found in directory \";;;\" ending in \".json\"."
 DEL_FILES_ONE_FILE_STR = ";;; file ending in \".json\" in directory \";;;\" was found and deleted."
 DEL_FILES_MULT_FILES_STR = ";;; files ending in \".json\" in directory \";;;\" were found and deleted."
+
+# utils
+UTILS_UNIDENTIFYABLE_ROOM_NAME_STR = "N/A"

@@ -9,4 +9,4 @@ __pycache__
 # files
 tempCodeRunner.py
 config.json
-cache.txt
+*.txt

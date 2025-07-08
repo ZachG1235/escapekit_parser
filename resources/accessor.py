@@ -9,7 +9,7 @@ from .immutable_constants import *
 
 def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
     # initialize constants
-    config_path = os.path.join("config.json")
+    config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
     input_folder_path_str = data["INPUT_FOLDER_PATH"]
@@ -20,15 +20,16 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
     with open(f"{input_file_path}.json", 'r') as fileObj:
         json_data = json.load(fileObj)
     found_data = {}
-
+    
+    # find groups
     for each_group in json_data:
         matching_search = 0
         for each_tuple in key_tuples:
             tup_key, tup_value = each_tuple
-            if tup_key == "group_size":
+            if tup_key == SEARCH_ENUM_GROUP_SIZE:
                 if int(json_data[each_group][tup_key]) == int(tup_value):
                     matching_search += 1
-            elif tup_key == "escaped":
+            elif tup_key == SEARCH_ENUM_ESCAPED:
                 if json_data[each_group][tup_key]:
                     matching_search += 1
             else:
@@ -38,7 +39,7 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
                     matching_search += 1
         if matching_search == len(key_tuples):
             found_data[each_group] = json_data[each_group]
-
+    
     if len(sort_tuple) > 0:
         sort_key, sort_bool = sort_tuple
         sort_bool = not sort_bool # originally asked for least to greatest, inverting it is actually least to greatest
@@ -46,7 +47,7 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
 
     out_file_str = generate_outfile_str(key_tuples, sort_tuple)
     out_file_path = os.path.join(output_folder_path, out_file_str)
-
+    
     with open(f"{out_file_path}.json", 'w') as out_file:
         out_file.write(json.dumps(found_data, indent=4))
     
@@ -57,7 +58,7 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
 
 def generate_outfile_str(key_tuples : list, sort_tuple : tuple) -> str:
     # initialize constants
-    config_path = os.path.join("config.json")
+    config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
     generate_unique_outfile_name_bool = "True" == data["GENERATE_UNIQUE_OUTFILE_NAME"] 

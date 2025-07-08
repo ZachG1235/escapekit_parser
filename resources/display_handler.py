@@ -21,7 +21,7 @@ def show_results(file_grab_name: str):
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 
-    config_path = os.path.join("config.json")
+    config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
     output_folder = data["OUTPUT_FOLDER_PATH"]
@@ -68,10 +68,10 @@ def show_results(file_grab_name: str):
         for each_data in json_data[each_group]:
             if each_data != "status":
                 displayable_data = json_data[each_group][each_data]
-                if each_data == "escaped":
+                if each_data == SEARCH_ENUM_ESCAPED:
                     displayable_data = str(displayable_data == 1)
                 if each_data == "players":
-                    is_group = json_data[each_group].get("game_master") == EVENT_GM_CONVERSION_LITERAL
+                    is_group = json_data[each_group].get(SEARCH_ENUM_GAME_MASTER) == EVENT_GM_CONVERSION_LITERAL
                     data_button = tk.Button(scrollable_frame, text="Link", font=("Sitka Small", 9),
                                             command=lambda v=each_group, b=is_group: url_redirect(v, b))
                     data_button.grid(row=row_index, column=col_index, padx=0, pady=0)

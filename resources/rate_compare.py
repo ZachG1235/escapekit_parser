@@ -5,14 +5,14 @@ from .immutable_constants import *
 
 
 def init_escape_rates() -> dict:
-    config_path = os.path.join("config.json")
+    config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
 
     output_folder_path_str = data["OUTPUT_FOLDER_PATH"]
     cur_output_filestr = ""
 
-    cur_output_filestr = get_value_from_cache("cur_output_filename")
+    cur_output_filestr = get_value_from_cache(CACHE_CURRENT_OUTPUT_KEY)
     
     output_file_path = os.path.join(output_folder_path_str, cur_output_filestr)
     with open(f"{output_file_path}.json", 'r') as fileObj:
@@ -41,19 +41,19 @@ def init_escape_rates() -> dict:
     # }
     for each_group in json_data:
         cur_group = json_data[each_group]
-        gm = cur_group["game_master"]
-        room = cur_group["room"]
+        gm = cur_group[SEARCH_ENUM_GAME_MASTER]
+        room = cur_group[SEARCH_ENUM_ROOM]
 
         if not gm in gm_escape_rate_dict:
             gm_escape_rate_dict[gm] = {"total_rooms": 0, room : {"total": 0, "escaped": 0, "id_cache": []}}
-        elif not room in gm_escape_rate_dict[cur_group["game_master"]]:
+        elif not room in gm_escape_rate_dict[cur_group[SEARCH_ENUM_GAME_MASTER]]:
             gm_escape_rate_dict[gm][room] = {"total": 0, "escaped": 0, "id_cache": []}
         gm_escape_rate_dict[gm][room]["total"] += 1
         if ESCAPE_RATE_CACHE_STORAGE:
             gm_escape_rate_dict[gm][room]["id_cache"].append(each_group)
         gm_escape_rate_dict[gm]["total_rooms"] += 1
-        if cur_group["escaped"] == True:
-            gm_escape_rate_dict[gm][room]["escaped"] += 1
+        if cur_group[SEARCH_ENUM_ESCAPED] == True:
+            gm_escape_rate_dict[gm][room][SEARCH_ENUM_ESCAPED] += 1
     
     return gm_escape_rate_dict
 
@@ -78,11 +78,6 @@ def escaperate_display():
     main_canvas.create_window((0, 0), window=inner_frame, anchor="nw")
 
 
-    # get top header columns
-    # x_column_sort_label = tk.Label(root, font=("Sitka Small", 10), text="Test")
-    # x_column_sort_box = tk.Entry(root, font=("Sitka Small", 10))
-    # x_column_sort_label.grid(row=0, column=0)
-    # x_column_sort_box.grid(row=0, column=1)
 
     escape_rate_data = init_escape_rates()
     game_masters = dict(sorted(escape_rate_data.items(), key=lambda item: int(item[1]["total_rooms"]), reverse=True))
@@ -119,7 +114,7 @@ def escaperate_display():
         if not each_gm == EVENT_GM_CONVERSION_LITERAL:
             for each_room in room_label_list:
                 try: 
-                    escaped_count = int(escape_rate_data[each_gm][each_room]["escaped"])
+                    escaped_count = int(escape_rate_data[each_gm][each_room][SEARCH_ENUM_ESCAPED])
                     total_count = int(escape_rate_data[each_gm][each_room]["total"])
                     rate_calc = escaped_count / total_count
                     rate_calc = round(rate_calc * 100, 2)
