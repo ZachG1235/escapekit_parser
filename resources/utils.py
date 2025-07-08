@@ -1,6 +1,11 @@
 import os, json
 from .immutable_constants import *
 
+class SearchErrorClass(Exception):
+    def __init__(self, message="Error has occurred"):
+        self.message = message
+        super().__init__(self.message)
+
 def get_room_names() -> list:
     # initialize constants
     config_path = os.path.join(CONFIG_FILE_NAME)
