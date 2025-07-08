@@ -4,6 +4,7 @@ OUTPUT_FOLDER_PATH = "output"
 RESOURCE_FOLDER_PATH = "resources"
 GENERATE_UNIQUE_OUTFILE_NAME = False
 OUTFILE_ABBREVIATIONS = {"game_master": "gm", "room": "rm", "group_size": "gz", "escaped": "es", "TIME_REMAINING": "TM", "TRUE": "Y", "FALSE": "N"}
+MAX_DISPLAYABLE_ENTRIES = 100
 
 # colors
 SEARCH_BTN_COLOR = "royalblue1"

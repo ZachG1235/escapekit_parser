@@ -7,6 +7,10 @@ def show_results(file_grab_name: str):
     root = tk.Toplevel()
     root.title("EscapeKit Parser: Results")
     root.geometry("990x600")  
+    config_path = os.path.join(CONFIG_FILE_NAME)
+    with open(config_path, 'r') as config_info:
+        data = json.load(config_info)
+    max_displayed_entries = int(data["MAX_DISPLAYABLE_ENTRIES"])
 
     # scroll region
     canvas = tk.Canvas(root)
@@ -60,8 +64,8 @@ def show_results(file_grab_name: str):
     for each_group in json_data:
         col_index = 0
         scrollable_frame.grid_rowconfigure(row_index, minsize=25)
-        if group_display_total > 100:
-            out_msg = format_output_str(DISPLAY_HANDLER_CUTOFF_STR, (100, len(json_data)))
+        if group_display_total > max_displayed_entries:
+            out_msg = format_output_str(DISPLAY_HANDLER_CUTOFF_STR, (max_displayed_entries, len(json_data)))
             data_label = tk.Label(scrollable_frame, text=out_msg, font=("Sitka Small", 13))
             data_label.grid(row=row_index, column=col_index, padx=5, pady=0, columnspan=9)
             break

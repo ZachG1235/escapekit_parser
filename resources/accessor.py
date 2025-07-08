@@ -376,7 +376,16 @@ def tk_main():
         
     def open_file():
         file_name = get_value_from_cache(CACHE_CURRENT_OUTPUT_KEY)
-        show_results(file_name)
+        config_path = os.path.join(CONFIG_FILE_NAME)
+        with open(config_path, 'r') as config_info:
+            data = json.load(config_info)
+        max_displayed_entries = data["MAX_DISPLAYABLE_ENTRIES"]
+        try:
+            if isinstance(int(max_displayed_entries), int):
+                show_results(file_name)
+        except ValueError:
+            set_result_status(format_output_str(INVALID_DISPLAY_INTEGER_STR, max_displayed_entries), result_label)
+        
 
     def open_escaperate():
         escaperate_display()
@@ -417,7 +426,9 @@ def tk_main():
                 data_dict["INPUT_FILENAME"] = in_file_box.get()
                 data_dict["OUTPUT_FOLDER_PATH"] = out_fold_box.get()
                 data_dict["RESOURCE_FOLDER_PATH"] = resource_fold_box.get()
+                data_dict["MAX_DISPLAYABLE_ENTRIES"] = max_displayed_box.get()
                 data_dict["GENERATE_UNIQUE_OUTFILE_NAME"] = str(settings_guon_bool.get())
+                
 
                 abb_dict = {}
                 abb_dict[SEARCH_ENUM_GAME_MASTER] = out_file_abb_box_gm.get()
@@ -455,21 +466,21 @@ def tk_main():
             def toggle_outfile_abb_visibility():
                 if settings_guon_bool.get():
                     # grid the abbreviations
-                    out_file_abb_label_header.grid(row=5, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5, columnspan=2)
-                    out_file_abb_label_gm.grid(row=6, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_box_gm.grid(row=6, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_label_rm.grid(row=7, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_box_rm.grid(row=7, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_label_gz.grid(row=8, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_box_gz.grid(row=8, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_label_es.grid(row=9, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_box_es.grid(row=9, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_label_tm.grid(row=10, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_box_tm.grid(row=10, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_label_true.grid(row=11, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_box_true.grid(row=11, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_label_false.grid(row=12, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-                    out_file_abb_box_false.grid(row=12, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_header.grid(row=6, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5, columnspan=2)
+                    out_file_abb_label_gm.grid(row=7, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_gm.grid(row=7, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_rm.grid(row=8, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_rm.grid(row=8, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_gz.grid(row=9, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_gz.grid(row=9, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_es.grid(row=10, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_es.grid(row=10, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_tm.grid(row=11, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_tm.grid(row=11, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_true.grid(row=12, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_true.grid(row=12, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_label_false.grid(row=13, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+                    out_file_abb_box_false.grid(row=13, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
                 else:
                     # ungrid the abbreviations
                     out_file_abb_label_header.grid_remove()
@@ -513,13 +524,19 @@ def tk_main():
             resource_fold_label.grid(row=3, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             resource_fold_box.grid(row=3, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             resource_fold_box.insert(0, data["RESOURCE_FOLDER_PATH"])
+
+            max_displayed_label = tk.Label(setting_root, text="Max Displayed Entries", font=("Sitka Small", 10))
+            max_displayed_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            max_displayed_label.grid(row=4, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            max_displayed_box.grid(row=4, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            max_displayed_box.insert(0, data["MAX_DISPLAYABLE_ENTRIES"])
             
             # set settings_guon_bool to it's associated value
             settings_guon_bool.set("True" == data["GENERATE_UNIQUE_OUTFILE_NAME"])
             gen_unique_out_name_label = tk.Label(setting_root, text="Generate Unique Outfile Name", font=("Sitka Small", 10))
             gen_unique_out_name_checkbox = tk.Checkbutton(setting_root, variable=settings_guon_bool, command=toggle_outfile_abb_visibility) # type: ignore
-            gen_unique_out_name_label.grid(row=4, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            gen_unique_out_name_checkbox.grid(row=4, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5, sticky="w")
+            gen_unique_out_name_label.grid(row=5, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            gen_unique_out_name_checkbox.grid(row=5, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5, sticky="w")
             
             # outfile abbreviations
             out_file_abb_label_header = tk.Label(setting_root, text="Outfile Conversion Key", font=("Sitka Small", 9))
@@ -556,50 +573,50 @@ def tk_main():
 
             search_btn_label = tk.Label(setting_root, text="Search Button Color", font=("Sitka Small", 10))
             search_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            search_btn_label.grid(row=14, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            search_btn_box.grid(row=14, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            search_btn_label.grid(row=15, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            search_btn_box.grid(row=15, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             search_btn_box.insert(0, data["SEARCH_BTN_COLOR"])
 
             delete_btn_label = tk.Label(setting_root, text="Delete Button Color", font=("Sitka Small", 10))
             delete_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            delete_btn_label.grid(row=15, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            delete_btn_box.grid(row=15, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            delete_btn_label.grid(row=16, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            delete_btn_box.grid(row=16, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             delete_btn_box.insert(0, data["DELETE_BTN_COLOR"])
 
             parse_btn_label = tk.Label(setting_root, text="Parse Button Color", font=("Sitka Small", 10))
             parse_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            parse_btn_label.grid(row=16, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            parse_btn_box.grid(row=16, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            parse_btn_label.grid(row=17, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            parse_btn_box.grid(row=17, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             parse_btn_box.insert(0, data["PARSE_BTN_COLOR"])
 
             open_btn_label = tk.Label(setting_root, text="Open Button Color", font=("Sitka Small", 10))
             open_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            open_btn_label.grid(row=17, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            open_btn_box.grid(row=17, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            open_btn_label.grid(row=18, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            open_btn_box.grid(row=18, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             open_btn_box.insert(0, data["OPEN_BTN_COLOR"])
 
             setting_btn_label = tk.Label(setting_root, text="Setting Button Color", font=("Sitka Small", 10))
             setting_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            setting_btn_label.grid(row=18, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            setting_btn_box.grid(row=18, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            setting_btn_label.grid(row=19, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            setting_btn_box.grid(row=19, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             setting_btn_box.insert(0, data["SETTING_BTN_COLOR"])
 
             restore_def_btn_label = tk.Label(setting_root, text="Restore Defaults Button Color", font=("Sitka Small", 10))
             restore_def_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            restore_def_btn_label.grid(row=19, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            restore_def_btn_box.grid(row=19, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            restore_def_btn_label.grid(row=20, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            restore_def_btn_box.grid(row=20, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             restore_def_btn_box.insert(0, data["RESTR_CNFG_BTN_COLOR"])
 
             save_set_btn_label = tk.Label(setting_root, text="Save Settings Button Color", font=("Sitka Small", 10))
             save_set_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            save_set_btn_label.grid(row=20, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            save_set_btn_box.grid(row=20, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            save_set_btn_label.grid(row=21, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            save_set_btn_box.grid(row=21, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             save_set_btn_box.insert(0, data["SAVE_STNGS_BTN_COLOR"])
             
             open_er_btn_label = tk.Label(setting_root, text="Open Escape Rates Button Color", font=("Sitka Small", 10))
             open_er_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
-            open_er_btn_label.grid(row=21, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
-            open_er_btn_box.grid(row=21, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            open_er_btn_label.grid(row=22, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            open_er_btn_box.grid(row=22, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             open_er_btn_box.insert(0, data["OPEN_ESCAPERATE_BTN_COLOR"])
 
             bad_colors = []
@@ -610,7 +627,7 @@ def tk_main():
                                         command=restore_defaults, 
                                             bg=accessed_color,
                                                 font=("Sitka Small", 11))
-            restore_default_btn.grid(row=22, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            restore_default_btn.grid(row=23, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
 
             valid_color, accessed_color = is_valid_color(root, data["SAVE_STNGS_BTN_COLOR"])
             if not valid_color:
@@ -619,7 +636,7 @@ def tk_main():
                                         command=save_current_settings, 
                                             bg=accessed_color,
                                                 font=("Sitka Small", 11))
-            save_settings_btn.grid(row=22, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
+            save_settings_btn.grid(row=23, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             output_bad_colors(bad_colors, result_label)
             
             setting_root.bind("<Destroy>", on_destroy)

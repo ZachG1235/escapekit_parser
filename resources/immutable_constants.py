@@ -19,7 +19,7 @@ ERROR_NO_INPUT_FILE_PATH = "Could not find input file with path \"{in_path_strin
 # accessor
 CACHE_CURRENT_OUTPUT_KEY = "cur_output_filename"
 CONFIG_FILE_NAME = "config.json"
-CACHE_FILE_NAME = "cached.txt"
+CACHE_FILE_NAME = "cache.txt"
 SEARCH_ENUM_GAME_MASTER = "game_master"
 SEARCH_ENUM_ROOM = "room"
 SEARCH_ENUM_GROUP_SIZE = "group_size"
@@ -36,6 +36,7 @@ ADV_SET_RESTORE_DEFAULTS_STR = "Default settings restored to \";;;\". Restart pr
 DEL_FILES_NO_FILES_STR = ";;; files were found in directory \";;;\" ending in \".json\"."
 DEL_FILES_ONE_FILE_STR = ";;; file ending in \".json\" in directory \";;;\" was found and deleted."
 DEL_FILES_MULT_FILES_STR = ";;; files ending in \".json\" in directory \";;;\" were found and deleted."
+INVALID_DISPLAY_INTEGER_STR = "Error: \";;;\" is not a valid integer. Please change in settings."
 
 # utils
 UTILS_UNIDENTIFYABLE_ROOM_NAME_STR = "N/A"
