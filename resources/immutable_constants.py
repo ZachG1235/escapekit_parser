@@ -29,6 +29,7 @@ RESULT_NO_FILTER_SEARCH_STR = "Searched w/ no filters and found ;;; results.\nSa
 RESULT_WITH_FILTER_SEARCH_STR = "Searched and found ;;; results.\nSaved to \";;;.json\"."
 ERROR_PARSE_CSV_BUTTON_STR = "Parsed file could not be found.\nTry \"Parse CSV\" button?"
 ERROR_SEARCH_INPUT_CLASS_STR = "Could not find \";;;.json\".\nVerify input file location and constants in settings."
+ERROR_NONEXISTENT_CSV_STR = "File \";;;\" could not be found. Please put your player data into the folder \";;;\"."
 STATUS_PARSING_IN_PROG_STR = "Parsing ;;;..."
 ERROR_PARSE_INVALID_FILEPATH_STR = "Could not find \";;;\""
 RESULT_PARSE_SUCCESS_STR = "Successfully parsed \";;;\""

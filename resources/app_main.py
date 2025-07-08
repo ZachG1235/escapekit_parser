@@ -5,7 +5,7 @@ from .result_display import show_results
 from .constants import *            # imports constants
 from .immutable_constants import *
 from .rate_display import escaperate_display
-from .utils import get_room_names, get_value_from_cache, write_to_cache, format_output_str, SearchErrorClass
+from .utils import get_room_names, get_value_from_cache, write_to_cache, format_output_str, ParsedFileExistenceError, InputFileExistenceError
 
 
 def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
@@ -18,11 +18,13 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
     output_folder_path = data["OUTPUT_FOLDER_PATH"]
     
     input_file_path = os.path.join(input_folder_path_str, input_filename_str)
+    
     try: 
         with open(f"{input_file_path}.json", 'r') as fileObj:
             json_data = json.load(fileObj)
     except FileNotFoundError:
-        raise SearchErrorClass(format_output_str(ERROR_SEARCH_INPUT_CLASS_STR, (input_file_path)))
+        raise ParsedFileExistenceError(ERROR_PARSE_CSV_BUTTON_STR)
+
     
     found_data = {}
     
@@ -353,8 +355,10 @@ def tk_main():
                 out_msg = format_output_str(RESULT_WITH_FILTER_SEARCH_STR, (amount_found, out_file_name))
             set_result_status(out_msg, result_label)
             set_open_button(True)        
-        except SearchErrorClass as search_error:
+        except ParsedFileExistenceError as search_error:
             set_result_status(search_error.message, result_label)
+        except InputFileExistenceError as in_error:
+            set_result_status(in_error.message, result_label)
 
             
     def file_parse():

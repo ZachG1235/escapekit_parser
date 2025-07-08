@@ -1,8 +1,13 @@
 import os, json
 from .immutable_constants import *
 
-class SearchErrorClass(Exception):
-    def __init__(self, message="Error has occurred"):
+class ParsedFileExistenceError(Exception):
+    def __init__(self, message="Parse file error has occurred"):
+        self.message = message
+        super().__init__(self.message)
+
+class InputFileExistenceError(Exception):
+    def __init__(self, message="Input file error has occurred"):
         self.message = message
         super().__init__(self.message)
 
