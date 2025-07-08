@@ -1,4 +1,4 @@
-from resources.accessor import tk_main
+from resources.app_main import tk_main
 import sys, os, json
 from resources.immutable_constants import *
 

@@ -1,10 +1,10 @@
 import json, os, datetime
 import tkinter as tk
-from .file_updater import update_escape_groups
-from .display_handler import show_results
+from .file_parser import update_escape_groups
+from .result_display import show_results
 from .constants import *            # imports constants
 from .immutable_constants import *
-from .rate_compare import escaperate_display
+from .rate_display import escaperate_display
 from .utils import get_room_names, get_value_from_cache, write_to_cache, format_output_str, SearchErrorClass
 
 
