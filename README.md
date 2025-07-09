@@ -62,7 +62,7 @@ This is a brief explanation of each button and their functionality.
 * Open Rates
     * Based off of the previously generated output json file in `Output Folder Path`, a table is created with escape rates for each room and each game master. 
 * Open File 
-    * Based off of the previously generated output json file in `Output Folder Path`, a list of each group is given with a hyperlink to it's corresponding EscapeKit group. 
+    * Based off of the previously generated output json file in `Output Folder Path`, a scrollable list of each group is given with a hyperlink to it's corresponding EscapeKit group. 
 
 #### **Setting Buttons**
 * Save Current Settings
@@ -87,6 +87,8 @@ The settings menu allows for the user to make modifications to the program's con
     * Upon pressing the Search button, the program will output a result into a file within the `Output Folder Path`.  
     If the checkbox is disabled, all outputs will be written as **output.json** and will be overwritten each time the Search button is pressed.  
     If the checkbox is enabled, all outputs will have a semi-unique filename that depends on what filter is selected. For example: if the "Game Master" filter has the value "Bob" in it, the output will be **game_masterBOB.json** as the filename. HOWEVER,   
+* `Max Displayed Entries`  
+    * When pressing the **"Open File"** button, it will generate a scrollable window with all entries matching the search. The amount of entries displayed won't go over the number specified in this field. This is to increase performance and is set at a default value of 100. This value can be increased or decreased to the user's preference.    
 * `X Button Color`
     * Using Tkinter's supported colors, you can **modify** any of the button's rendered colors. In order for these settings to take effect, their corresponding window must be **reopened** (you might need to **close and reopen** the program). If a color is not supported, a **status message** will be shown upon opening the **button's window**, and the incorrect color will override to **white**. 
 
