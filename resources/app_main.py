@@ -56,11 +56,25 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
         hours, mins, secs = map(int, time_str.split(":"))
         return datetime.timedelta(hours=hours, minutes=mins, seconds=secs)
 
+    def parse_game_master_sort(gm_str, ltg_bool):
+        if gm_str == "":
+            if ltg_bool:
+                # returns greatest alphabetical value 
+                return "AAAAAA"
+            # returns least alphabetical value
+            return "zzzzzzz"
+        return gm_str
+
+
     if len(sort_tuple) > 0:
         sort_key, sort_bool = sort_tuple
         sort_bool = not sort_bool # originally asked for least to greatest, inverting it is actually least to greatest
         if sort_key == "time_remaining":
             found_data = dict(sorted(found_data.items(), key=lambda item: parse_time_remaining(item[1][sort_key]), reverse=sort_bool))
+        elif sort_key == "game_master":
+            # alphabetically is backwards. reflip the boolean.
+            sort_bool = not sort_bool
+            found_data = dict(sorted(found_data.items(), key=lambda item: parse_game_master_sort(item[1][sort_key], sort_bool), reverse=sort_bool))
         else:
             found_data = dict(sorted(found_data.items(), key=lambda item: item[1][sort_key], reverse=sort_bool))
         show_rank_bool_str = "true"
