@@ -97,13 +97,19 @@ def escaperate_display():
         inner_frame.grid_columnconfigure(col_index, minsize=70)
         room_label_list.append(each_room)
         col_index += 1
-    
+
+    total_rooms_str = "total_rooms"
     for each_gm in game_masters:
         game_master_name = each_gm
+        try:
+            room_quantity = escape_rate_data[game_master_name][total_rooms_str]
+        except KeyError:
+            room_quantity = 0
+
         if each_gm == "":
             game_master_name = EMPTY_GM_CONVERSION_LITERAL
         if not each_gm == EVENT_GM_CONVERSION_LITERAL:
-            gm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=game_master_name)
+            gm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=f"{game_master_name}\n({room_quantity})")
             gm_label.grid(row=row_index, column=0, columnspan=2, rowspan=2)
         row_index += 2
     
