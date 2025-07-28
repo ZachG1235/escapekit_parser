@@ -92,6 +92,23 @@ The settings menu allows for the user to make modifications to the program's con
 * `X Button Color`
     * Using Tkinter's supported colors, you can **modify** any of the button's rendered colors. In order for these settings to take effect, their corresponding window must be **reopened** (you might need to **close and reopen** the program). If a color is not supported, a **status message** will be shown upon opening the **button's window**, and the incorrect color will override to **white**. 
 
+### Supporting Files Explanation
+* Input/Output Folder  
+  * The input and output folder are where the program reads and writes from, respectively. Input will house the .csv file and converted .json that holds the player data. The .csv is downloaded from EscapeKit. Output will hold all output files. Both of these hold a `.gitkeep` file that keeps the file hierarchy in GitHub, it can removed manually if considered clutter.  
+* Resources Folder 
+   * This folder holds all of the python files that operate the program. These files are meant to be used in tandem and not standalone. `app_main.py` operates the main functionality of the main program's UI. `constants.py` hold all the default values of the program that **Restore Defaults** reads from. `file_parser.py` handles the initial converstion from the .csv file to the .json. `immutable_constants.py` holds the constants that are not modified by the program. `rate_display.py` handles the UI for the escape rates. `result_display.py` shows the ranking of groups from the most recent output search. `utils.py` holds basic functions that some of the prior files use.
+* `.gitignore`  
+   * GitHub support file to holds what files to ignore when uploading to the repository. It can be removed manually if considered clutter.
+* `config.json`
+   * This file is created after running the program. This file holds all customizable settings in the **Advanced Settings** window that the user has modified.
+* `cache.json`
+   * This file holds a cache, currently limited to hold the last output file that was created. This is accessed by other resource files during runtime. 
+* `main.py` 
+   * Runs the program.
+* `README.md`
+   * The file you're reading now. Thanks for reading!
+
+
 ### Additional Functionality
 Some additional functionality is available, mainly for clean restarts of the program. 
 * Resetting Program
