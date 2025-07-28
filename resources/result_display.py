@@ -3,10 +3,13 @@ import json, os, webbrowser
 from .immutable_constants import *
 from .utils import format_output_str
 
-def show_results(file_grab_name: str):
+def show_results(file_grab_name: str, show_rank : bool):
     root = tk.Toplevel()
     root.title("EscapeKit Parser: Results")
-    root.geometry("990x600")  
+    horizontal_pixels = 990
+    if show_rank:
+        horizontal_pixels += 35
+    root.geometry(f"{horizontal_pixels}x600")  
     config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
         data = json.load(config_info)
@@ -44,6 +47,10 @@ def show_results(file_grab_name: str):
     test_label.grid(row=0, column=0, padx=5, pady=1)
     first_entry = list(json_data)[0]
     index = 0
+    if show_rank:
+        number_header_label = tk.Label(scrollable_frame, text="#", font=("Sitka Small", 11))
+        number_header_label.grid(row=0, column=index, padx=5, pady=3)
+        index += 1
     for each_data in json_data[first_entry]:
         if each_data != "status":
             displayable_data = each_data.replace('_', ' ').title()
@@ -67,8 +74,16 @@ def show_results(file_grab_name: str):
         if group_display_total > max_displayed_entries:
             out_msg = format_output_str(DISPLAY_HANDLER_CUTOFF_STR, (max_displayed_entries, len(json_data)))
             data_label = tk.Label(scrollable_frame, text=out_msg, font=("Sitka Small", 13))
-            data_label.grid(row=row_index, column=col_index, padx=5, pady=0, columnspan=9)
+            span_amount = 9
+            if show_rank:
+                span_amount += 1
+            data_label.grid(row=row_index, column=col_index, padx=5, pady=0, columnspan=span_amount)
             break
+        # if bool to show rank, use first column to show rank
+        if show_rank:
+            number_label = tk.Label(scrollable_frame, text=row_index, font=("Sitka Small", 9))
+            number_label.grid(row=row_index, column=col_index, padx=0, pady=0)
+            col_index += 1
         for each_data in json_data[each_group]:
             if each_data != "status":
                 displayable_data = json_data[each_group][each_data]
