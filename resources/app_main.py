@@ -47,10 +47,22 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
         if matching_search == len(key_tuples):
             found_data[each_group] = json_data[each_group]
     
+    def parse_time_remaining(time_str) -> datetime.timedelta:
+        if time_str == EVENT_TIME_RM_CONVERSION_LITERAL:
+            return datetime.timedelta(seconds=-1)
+        # if the time_str is blank
+        if not len(time_str) > 0:
+            return datetime.timedelta(seconds=0)
+        hours, mins, secs = map(int, time_str.split(":"))
+        return datetime.timedelta(hours=hours, minutes=mins, seconds=secs)
+
     if len(sort_tuple) > 0:
         sort_key, sort_bool = sort_tuple
         sort_bool = not sort_bool # originally asked for least to greatest, inverting it is actually least to greatest
-        found_data = dict(sorted(found_data.items(), key=lambda item: item[1][sort_key], reverse=sort_bool))
+        if sort_key == "time_remaining":
+            found_data = dict(sorted(found_data.items(), key=lambda item: parse_time_remaining(item[1][sort_key]), reverse=sort_bool))
+        else:
+            found_data = dict(sorted(found_data.items(), key=lambda item: item[1][sort_key], reverse=sort_bool))
         show_rank_bool_str = "true"
     else:
         show_rank_bool_str = "false"
