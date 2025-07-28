@@ -18,6 +18,7 @@ ERROR_NO_INPUT_FILE_PATH = "Could not find input file with path \";;;\""
 
 # accessor
 CACHE_CURRENT_OUTPUT_KEY = "cur_output_filename"
+CACHE_SHOW_RANK_KEY = "show_rank_bool"
 CONFIG_FILE_NAME = "config.json"
 CACHE_FILE_NAME = "cache.json"
 SEARCH_ENUM_GAME_MASTER = "game_master"
