@@ -59,7 +59,7 @@ def init_escape_rates() -> dict:
 
 def escaperate_display():
     root = tk.Toplevel()
-    root.title("Compare Escape Rates")
+    root.title("EscapeKit Parser: Rates")
 
     gm_header_start_row = 3
     room_header_start_col = 2
