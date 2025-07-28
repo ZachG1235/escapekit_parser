@@ -43,12 +43,12 @@ def show_results(file_grab_name: str, show_rank : bool):
     for i in range(0, 9):
         scrollable_frame.grid_columnconfigure(i, minsize=20)
 
-    test_label = tk.Label(scrollable_frame, text="", font=("Sitka Small", 9))
+    test_label = tk.Label(scrollable_frame, text="", font=SMALL_FONT_TYPE)
     test_label.grid(row=0, column=0, padx=5, pady=1)
     first_entry = list(json_data)[0]
     index = 0
     if show_rank:
-        number_header_label = tk.Label(scrollable_frame, text="#", font=("Sitka Small", 11))
+        number_header_label = tk.Label(scrollable_frame, text="#", font=LARGE_FONT_TYPE)
         number_header_label.grid(row=0, column=index, padx=5, pady=3)
         index += 1
     for each_data in json_data[first_entry]:
@@ -56,7 +56,7 @@ def show_results(file_grab_name: str, show_rank : bool):
             displayable_data = each_data.replace('_', ' ').title()
             if each_data == "players":
                 displayable_data = "URL"
-            current_label = tk.Label(scrollable_frame, text=displayable_data, font=("Sitka Small", 11))
+            current_label = tk.Label(scrollable_frame, text=displayable_data, font=LARGE_FONT_TYPE)
             current_label.grid(row=0, column=index, padx=5, pady=3)
             index += 1
 
@@ -73,7 +73,7 @@ def show_results(file_grab_name: str, show_rank : bool):
         scrollable_frame.grid_rowconfigure(row_index, minsize=25)
         if group_display_total > max_displayed_entries:
             out_msg = format_output_str(DISPLAY_HANDLER_CUTOFF_STR, (max_displayed_entries, len(json_data)))
-            data_label = tk.Label(scrollable_frame, text=out_msg, font=("Sitka Small", 13))
+            data_label = tk.Label(scrollable_frame, text=out_msg, font=VERY_LARGE_FONT_TYPE)
             span_amount = 9
             if show_rank:
                 span_amount += 1
@@ -81,7 +81,7 @@ def show_results(file_grab_name: str, show_rank : bool):
             break
         # if bool to show rank, use first column to show rank
         if show_rank:
-            number_label = tk.Label(scrollable_frame, text=row_index, font=("Sitka Small", 9))
+            number_label = tk.Label(scrollable_frame, text=row_index, font=SMALL_FONT_TYPE)
             number_label.grid(row=row_index, column=col_index, padx=0, pady=0)
             col_index += 1
         for each_data in json_data[each_group]:
@@ -91,11 +91,11 @@ def show_results(file_grab_name: str, show_rank : bool):
                     displayable_data = str(displayable_data == 1)
                 if each_data == "players":
                     is_group = json_data[each_group].get(SEARCH_ENUM_GAME_MASTER) == EVENT_GM_CONVERSION_LITERAL
-                    data_button = tk.Button(scrollable_frame, text="Link", font=("Sitka Small", 9),
+                    data_button = tk.Button(scrollable_frame, text="Link", font=SMALL_FONT_TYPE,
                                             command=lambda v=each_group, b=is_group: url_redirect(v, b))
                     data_button.grid(row=row_index, column=col_index, padx=0, pady=0)
                 else:
-                    data_label = tk.Label(scrollable_frame, text=displayable_data, font=("Sitka Small", 9), wraplength=200)
+                    data_label = tk.Label(scrollable_frame, text=displayable_data, font=SMALL_FONT_TYPE, wraplength=200)
                     data_label.grid(row=row_index, column=col_index, padx=0, pady=0)
                 col_index += 1
         row_index += 1

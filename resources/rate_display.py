@@ -92,7 +92,7 @@ def escaperate_display():
 
     room_label_list = []
     for each_room in room_names:
-        rm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=each_room.replace(' ', "\n", 1))
+        rm_label = tk.Label(inner_frame, font=MEDIUM_FONT_TYPE, text=each_room.replace(' ', "\n", 1))
         rm_label.grid(row=0, column=col_index, sticky="news")
         inner_frame.grid_columnconfigure(col_index, minsize=70)
         room_label_list.append(each_room)
@@ -109,7 +109,7 @@ def escaperate_display():
         if each_gm == "":
             game_master_name = EMPTY_GM_CONVERSION_LITERAL
         if not each_gm == EVENT_GM_CONVERSION_LITERAL:
-            gm_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=f"{game_master_name}\n({room_quantity})")
+            gm_label = tk.Label(inner_frame, font=MEDIUM_FONT_TYPE, text=f"{game_master_name}\n({room_quantity})")
             gm_label.grid(row=row_index, column=0, columnspan=2, rowspan=2)
         row_index += 2
     
@@ -129,7 +129,7 @@ def escaperate_display():
                 except KeyError: # room data does not exist
                     text_input = ESCAPE_RATE_NO_VALUE_DISPLAY_LITERAL
                     subtitle_text = ""
-                rate_label = tk.Label(inner_frame, font=("Sitka Small", 10), text=text_input,
+                rate_label = tk.Label(inner_frame, font=MEDIUM_FONT_TYPE, text=text_input,
                                                 bg=get_mod_index(ESCAPE_RATE_BACKGROUND_COLORS, color_index))
                 # if there is no data for the room
                 if text_input == ESCAPE_RATE_NO_VALUE_DISPLAY_LITERAL: 
@@ -137,7 +137,7 @@ def escaperate_display():
                 # otherwise, display data for room
                 else:
                     rate_label.grid(row=data_row_index, column=data_col_index, sticky="news")
-                    subtitle_label = tk.Label(inner_frame, font=("Sitka Small", 8), text=subtitle_text, 
+                    subtitle_label = tk.Label(inner_frame, font=VERY_SMALL_FONT_TYPE, text=subtitle_text, 
                                                     bg=get_mod_index(ESCAPE_RATE_BACKGROUND_COLORS, color_index))
                     data_row_index += 1
                     subtitle_label.grid(row=data_row_index, column=data_col_index, sticky="news")

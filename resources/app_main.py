@@ -262,17 +262,17 @@ def tk_main():
             ltg_check_box.grid_remove()
 
     # game master checkbox and field
-    gm_check_box = tk.Checkbutton(root, text="Game Master", variable=gm_check_bool, command=toggle_gm_box, font=("Sitka Small", 11))
+    gm_check_box = tk.Checkbutton(root, text="Game Master", variable=gm_check_bool, command=toggle_gm_box, font=LARGE_FONT_TYPE)
     gm_check_box.grid(row=0, column=0, padx=10, pady=10, rowspan=2)
-    gm_label = tk.Label(root, text="Enter game master name:", font=("Sitka Small", 10))
-    gm_box = tk.Entry(root, font=("Sitka Small", 10))
+    gm_label = tk.Label(root, text="Enter game master name:", font=MEDIUM_FONT_TYPE)
+    gm_box = tk.Entry(root, font=MEDIUM_FONT_TYPE)
 
     # room name checkbox and dropdown
-    room_check_box = tk.Checkbutton(root, text="Room Name", variable=room_check_bool, command=toggle_room_box, font=("Sitka Small", 11))
+    room_check_box = tk.Checkbutton(root, text="Room Name", variable=room_check_bool, command=toggle_room_box, font=LARGE_FONT_TYPE)
     room_check_box.grid(row=2, column=0, padx=10, pady=10, rowspan=2)
     room_dropdown = tk.OptionMenu(root, room_dropdown_selection, *room_dropdown_labels)
-    room_dropdown.config(font=("Sitka Small", 10))
-    room_dropdown["menu"].config(font=("Sitka Small", 10))
+    room_dropdown.config(font=MEDIUM_FONT_TYPE)
+    room_dropdown["menu"].config(font=MEDIUM_FONT_TYPE)
     def update_dropdowns(): # updates the dropdowns after parsing data
         menu = room_dropdown["menu"]
         menu.delete(0, "end")  # Clear existing options
@@ -285,25 +285,25 @@ def tk_main():
         room_dropdown_selection.set(room_list[0])
 
     # group size checkbox and field
-    gz_check_box = tk.Checkbutton(root, text="Group Size", variable=gz_check_bool, command=toggle_gz_box, font=("Sitka Small", 11))
+    gz_check_box = tk.Checkbutton(root, text="Group Size", variable=gz_check_bool, command=toggle_gz_box, font=LARGE_FONT_TYPE)
     gz_check_box.grid(row=4, column=0, padx=10, pady=10, rowspan=2)
-    gz_label = tk.Label(root, text="Enter group size:", font=("Sitka Small", 10))
-    gz_box = tk.Entry(root, font=("Sitka Small", 10))
+    gz_label = tk.Label(root, text="Enter group size:", font=MEDIUM_FONT_TYPE)
+    gz_box = tk.Entry(root, font=MEDIUM_FONT_TYPE)
 
     # sort by checkbox and dropdown
-    sort_check_box = tk.Checkbutton(root, text="Sort by", variable=sort_check_bool, command=sort_box, font=("Sitka Small", 11))
+    sort_check_box = tk.Checkbutton(root, text="Sort by", variable=sort_check_bool, command=sort_box, font=LARGE_FONT_TYPE)
     sort_check_box.grid(row=6, column=0, padx=10, pady=10, rowspan=2)
     sort_dropdown = tk.OptionMenu(root, sort_dropdown_selection, *sort_dropdown_labels)
-    sort_dropdown.config(font=("Sitka Small", 10))
-    sort_dropdown["menu"].config(font=("Sitka Small", 10))
-    ltg_check_box = tk.Checkbutton(root, text="Sort Least to Greatest?", variable=ltg_check_bool, font=("Sitka Small", 9))
+    sort_dropdown.config(font=MEDIUM_FONT_TYPE)
+    sort_dropdown["menu"].config(font=MEDIUM_FONT_TYPE)
+    ltg_check_box = tk.Checkbutton(root, text="Sort Least to Greatest?", variable=ltg_check_bool, font=SMALL_FONT_TYPE)
 
     # checkbox for escaped groups
-    escaped_check_box = tk.Checkbutton(root, text="Only show escaped rooms", variable=escaped_check_bool, font=("Sitka Small", 8))
+    escaped_check_box = tk.Checkbutton(root, text="Only show escaped rooms", variable=escaped_check_bool, font=VERY_SMALL_FONT_TYPE)
     escaped_check_box.grid(row=8, column=0, padx=10, pady=10)
 
     # result displaying label
-    result_label = tk.Label(root, text="", font=("Sitka Small", 8), wraplength=200)
+    result_label = tk.Label(root, text="", font=VERY_SMALL_FONT_TYPE, wraplength=200)
     result_label.grid(row=9, column=0, pady=10)
 
     # function to start the search process (activates on Search Button)
@@ -521,120 +521,120 @@ def tk_main():
 
             # get config file settings for the .insert() commands
 
-            in_fold_label = tk.Label(setting_root, text="Input Folder Path", font=("Sitka Small", 10))
-            in_fold_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            in_fold_label = tk.Label(setting_root, text="Input Folder Path", font=MEDIUM_FONT_TYPE)
+            in_fold_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             in_fold_label.grid(row=0, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             in_fold_box.grid(row=0, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             in_fold_box.insert(0, data["INPUT_FOLDER_PATH"])
 
-            in_file_label = tk.Label(setting_root, text="Input Filename", font=("Sitka Small", 10))
-            in_file_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            in_file_label = tk.Label(setting_root, text="Input Filename", font=MEDIUM_FONT_TYPE)
+            in_file_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             in_file_label.grid(row=1, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             in_file_box.grid(row=1, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             in_file_box.insert(0, data["INPUT_FILENAME"])
 
-            out_fold_label = tk.Label(setting_root, text="Output Folder Path", font=("Sitka Small", 10))
-            out_fold_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            out_fold_label = tk.Label(setting_root, text="Output Folder Path", font=MEDIUM_FONT_TYPE)
+            out_fold_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             out_fold_label.grid(row=2, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             out_fold_box.grid(row=2, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             out_fold_box.insert(0, data["OUTPUT_FOLDER_PATH"])
 
-            resource_fold_label = tk.Label(setting_root, text="Resources Folder Path", font=("Sitka Small", 10))
-            resource_fold_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            resource_fold_label = tk.Label(setting_root, text="Resources Folder Path", font=MEDIUM_FONT_TYPE)
+            resource_fold_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             resource_fold_label.grid(row=3, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             resource_fold_box.grid(row=3, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             resource_fold_box.insert(0, data["RESOURCE_FOLDER_PATH"])
 
-            max_displayed_label = tk.Label(setting_root, text="Max Displayed Entries", font=("Sitka Small", 10))
-            max_displayed_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            max_displayed_label = tk.Label(setting_root, text="Max Displayed Entries", font=MEDIUM_FONT_TYPE)
+            max_displayed_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             max_displayed_label.grid(row=4, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             max_displayed_box.grid(row=4, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             max_displayed_box.insert(0, data["MAX_DISPLAYABLE_ENTRIES"])
             
             # set settings_guon_bool to it's associated value
             settings_guon_bool.set("True" == data["GENERATE_UNIQUE_OUTFILE_NAME"])
-            gen_unique_out_name_label = tk.Label(setting_root, text="Generate Unique Outfile Name", font=("Sitka Small", 10))
+            gen_unique_out_name_label = tk.Label(setting_root, text="Generate Unique Outfile Name", font=MEDIUM_FONT_TYPE)
             gen_unique_out_name_checkbox = tk.Checkbutton(setting_root, variable=settings_guon_bool, command=toggle_outfile_abb_visibility) # type: ignore
             gen_unique_out_name_label.grid(row=5, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             gen_unique_out_name_checkbox.grid(row=5, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5, sticky="w")
             
             # outfile abbreviations
-            out_file_abb_label_header = tk.Label(setting_root, text="Outfile Conversion Key", font=("Sitka Small", 9))
+            out_file_abb_label_header = tk.Label(setting_root, text="Outfile Conversion Key", font=SMALL_FONT_TYPE)
             # game_master
-            out_file_abb_label_gm = tk.Label(setting_root, text=SEARCH_ENUM_GAME_MASTER, font=("Sitka Small", 8))
-            out_file_abb_box_gm = tk.Entry(setting_root, font=("Sitka Small", 8))
+            out_file_abb_label_gm = tk.Label(setting_root, text=SEARCH_ENUM_GAME_MASTER, font=VERY_SMALL_FONT_TYPE)
+            out_file_abb_box_gm = tk.Entry(setting_root, font=VERY_SMALL_FONT_TYPE)
             out_file_abb_box_gm.insert(0, data["OUTFILE_ABBREVIATIONS"][SEARCH_ENUM_GAME_MASTER])
             # room
-            out_file_abb_label_rm = tk.Label(setting_root, text=SEARCH_ENUM_ROOM, font=("Sitka Small", 8))
-            out_file_abb_box_rm = tk.Entry(setting_root, font=("Sitka Small", 8))
+            out_file_abb_label_rm = tk.Label(setting_root, text=SEARCH_ENUM_ROOM, font=VERY_SMALL_FONT_TYPE)
+            out_file_abb_box_rm = tk.Entry(setting_root, font=VERY_SMALL_FONT_TYPE)
             out_file_abb_box_rm.insert(0, data["OUTFILE_ABBREVIATIONS"][SEARCH_ENUM_ROOM])
             # group_size
-            out_file_abb_label_gz = tk.Label(setting_root, text=SEARCH_ENUM_GROUP_SIZE, font=("Sitka Small", 8))
-            out_file_abb_box_gz = tk.Entry(setting_root, font=("Sitka Small", 8))
+            out_file_abb_label_gz = tk.Label(setting_root, text=SEARCH_ENUM_GROUP_SIZE, font=VERY_SMALL_FONT_TYPE)
+            out_file_abb_box_gz = tk.Entry(setting_root, font=VERY_SMALL_FONT_TYPE)
             out_file_abb_box_gz.insert(0, data["OUTFILE_ABBREVIATIONS"][SEARCH_ENUM_GROUP_SIZE])
             # escaped
-            out_file_abb_label_es = tk.Label(setting_root, text=SEARCH_ENUM_ESCAPED, font=("Sitka Small", 8))
-            out_file_abb_box_es = tk.Entry(setting_root, font=("Sitka Small", 8))
+            out_file_abb_label_es = tk.Label(setting_root, text=SEARCH_ENUM_ESCAPED, font=VERY_SMALL_FONT_TYPE)
+            out_file_abb_box_es = tk.Entry(setting_root, font=VERY_SMALL_FONT_TYPE)
             out_file_abb_box_es.insert(0, data["OUTFILE_ABBREVIATIONS"][SEARCH_ENUM_ESCAPED])
             # TIME_REMAINING
-            out_file_abb_label_tm = tk.Label(setting_root, text="TIME_REMAINING", font=("Sitka Small", 8))
-            out_file_abb_box_tm = tk.Entry(setting_root, font=("Sitka Small", 8))
+            out_file_abb_label_tm = tk.Label(setting_root, text="TIME_REMAINING", font=VERY_SMALL_FONT_TYPE)
+            out_file_abb_box_tm = tk.Entry(setting_root, font=VERY_SMALL_FONT_TYPE)
             out_file_abb_box_tm.insert(0, data["OUTFILE_ABBREVIATIONS"]["TIME_REMAINING"])
             # TRUE
-            out_file_abb_label_true = tk.Label(setting_root, text="TRUE", font=("Sitka Small", 8))
-            out_file_abb_box_true = tk.Entry(setting_root, font=("Sitka Small", 8))
+            out_file_abb_label_true = tk.Label(setting_root, text="TRUE", font=VERY_SMALL_FONT_TYPE)
+            out_file_abb_box_true = tk.Entry(setting_root, font=VERY_SMALL_FONT_TYPE)
             out_file_abb_box_true.insert(0, data["OUTFILE_ABBREVIATIONS"]["TRUE"])
             # FALSE
-            out_file_abb_label_false = tk.Label(setting_root, text="FALSE", font=("Sitka Small", 8))
-            out_file_abb_box_false = tk.Entry(setting_root, font=("Sitka Small", 8))
+            out_file_abb_label_false = tk.Label(setting_root, text="FALSE", font=VERY_SMALL_FONT_TYPE)
+            out_file_abb_box_false = tk.Entry(setting_root, font=VERY_SMALL_FONT_TYPE)
             out_file_abb_box_false.insert(0, data["OUTFILE_ABBREVIATIONS"]["FALSE"])
 
             toggle_outfile_abb_visibility()  # will grid them if necessary 
 
-            search_btn_label = tk.Label(setting_root, text="Search Button Color", font=("Sitka Small", 10))
-            search_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            search_btn_label = tk.Label(setting_root, text="Search Button Color", font=MEDIUM_FONT_TYPE)
+            search_btn_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             search_btn_label.grid(row=15, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             search_btn_box.grid(row=15, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             search_btn_box.insert(0, data["SEARCH_BTN_COLOR"])
 
-            delete_btn_label = tk.Label(setting_root, text="Delete Button Color", font=("Sitka Small", 10))
-            delete_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            delete_btn_label = tk.Label(setting_root, text="Delete Button Color", font=MEDIUM_FONT_TYPE)
+            delete_btn_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             delete_btn_label.grid(row=16, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             delete_btn_box.grid(row=16, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             delete_btn_box.insert(0, data["DELETE_BTN_COLOR"])
 
-            parse_btn_label = tk.Label(setting_root, text="Parse Button Color", font=("Sitka Small", 10))
-            parse_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            parse_btn_label = tk.Label(setting_root, text="Parse Button Color", font=MEDIUM_FONT_TYPE)
+            parse_btn_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             parse_btn_label.grid(row=17, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             parse_btn_box.grid(row=17, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             parse_btn_box.insert(0, data["PARSE_BTN_COLOR"])
 
-            open_btn_label = tk.Label(setting_root, text="Open Button Color", font=("Sitka Small", 10))
-            open_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            open_btn_label = tk.Label(setting_root, text="Open Button Color", font=MEDIUM_FONT_TYPE)
+            open_btn_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             open_btn_label.grid(row=18, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             open_btn_box.grid(row=18, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             open_btn_box.insert(0, data["OPEN_BTN_COLOR"])
 
-            setting_btn_label = tk.Label(setting_root, text="Setting Button Color", font=("Sitka Small", 10))
-            setting_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            setting_btn_label = tk.Label(setting_root, text="Setting Button Color", font=MEDIUM_FONT_TYPE)
+            setting_btn_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             setting_btn_label.grid(row=19, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             setting_btn_box.grid(row=19, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             setting_btn_box.insert(0, data["SETTING_BTN_COLOR"])
 
-            restore_def_btn_label = tk.Label(setting_root, text="Restore Defaults Button Color", font=("Sitka Small", 10))
-            restore_def_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            restore_def_btn_label = tk.Label(setting_root, text="Restore Defaults Button Color", font=MEDIUM_FONT_TYPE)
+            restore_def_btn_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             restore_def_btn_label.grid(row=20, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             restore_def_btn_box.grid(row=20, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             restore_def_btn_box.insert(0, data["RESTR_CNFG_BTN_COLOR"])
 
-            save_set_btn_label = tk.Label(setting_root, text="Save Settings Button Color", font=("Sitka Small", 10))
-            save_set_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            save_set_btn_label = tk.Label(setting_root, text="Save Settings Button Color", font=MEDIUM_FONT_TYPE)
+            save_set_btn_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             save_set_btn_label.grid(row=21, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             save_set_btn_box.grid(row=21, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             save_set_btn_box.insert(0, data["SAVE_STNGS_BTN_COLOR"])
             
-            open_er_btn_label = tk.Label(setting_root, text="Open Escape Rates Button Color", font=("Sitka Small", 10))
-            open_er_btn_box = tk.Entry(setting_root, font=("Sitka Small", 10))
+            open_er_btn_label = tk.Label(setting_root, text="Open Escape Rates Button Color", font=MEDIUM_FONT_TYPE)
+            open_er_btn_box = tk.Entry(setting_root, font=MEDIUM_FONT_TYPE)
             open_er_btn_label.grid(row=22, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
             open_er_btn_box.grid(row=22, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             open_er_btn_box.insert(0, data["OPEN_ESCAPERATE_BTN_COLOR"])
@@ -646,7 +646,7 @@ def tk_main():
             restore_default_btn = tk.Button(setting_root, text="Restore Defaults", 
                                         command=restore_defaults, 
                                             bg=accessed_color,
-                                                font=("Sitka Small", 11))
+                                                font=LARGE_FONT_TYPE)
             restore_default_btn.grid(row=23, column=0, pady=ADV_SET_VERT_PAD_INT, padx=5)
 
             valid_color, accessed_color = is_valid_color(root, data["SAVE_STNGS_BTN_COLOR"])
@@ -655,7 +655,7 @@ def tk_main():
             save_settings_btn = tk.Button(setting_root, text="Save Current\nSettings", 
                                         command=save_current_settings, 
                                             bg=accessed_color,
-                                                font=("Sitka Small", 11))
+                                                font=LARGE_FONT_TYPE)
             save_settings_btn.grid(row=23, column=1, pady=ADV_SET_VERT_PAD_INT, padx=5)
             output_bad_colors(bad_colors, result_label)
             
@@ -713,7 +713,7 @@ def tk_main():
     parse_button = tk.Button(root, text="Parse CSV", 
                                  command=file_parse, 
                                      bg=accessed_color, 
-                                        font=("Sitka Small", 11))
+                                        font=LARGE_FONT_TYPE)
     parse_button.grid(row=8, column=1, pady=10)
 
     valid_color, accessed_color = is_valid_color(root, setting_btn_color_str)
@@ -723,7 +723,7 @@ def tk_main():
     advanced_settings_button = tk.Button(root, text="Open\nSettings", 
                                             command=open_advanced_settings_window, 
                                                 bg=accessed_color, 
-                                                font=("Sitka Small", 8))
+                                                font=VERY_SMALL_FONT_TYPE)
     advanced_settings_button.grid(row=8, column=1, sticky="e")
 
     valid_color, accessed_color = is_valid_color(root, search_btn_color_str)
@@ -733,7 +733,7 @@ def tk_main():
     search_button = tk.Button(root, text="Search", 
                                   command=search, 
                                       bg=accessed_color, 
-                                        font=("Sitka Small", 15))
+                                        font=HUGE_FONT_TYPE)
     search_button.grid(row=9, column=1, pady=10)
     
     valid_color, accessed_color = is_valid_color(root, open_btn_color_str)
@@ -743,7 +743,7 @@ def tk_main():
     open_file_button = tk.Button(root, text="Open\nFile", 
                                      command=open_file, 
                                          bg=accessed_color,
-                                             font=("Sitka Small", 8))
+                                             font=VERY_SMALL_FONT_TYPE)
     
     # open_file_button will grid when valid output is received
 
@@ -753,7 +753,7 @@ def tk_main():
     open_escaperate_button = tk.Button(root, text="Open\nRates", 
                                      command=open_escaperate, 
                                          bg=accessed_color,
-                                             font=("Sitka Small", 8))
+                                             font=VERY_SMALL_FONT_TYPE)
     # open_escaperate_button will grid when valid output is received
 
     #if output file exists, grid buttons
@@ -772,7 +772,7 @@ def tk_main():
     file_clear_button = tk.Button(root, text="Delete\nOutput", 
                                       command=clear_files, 
                                           bg=accessed_color,
-                                             font=("Sitka Small", 8))
+                                             font=VERY_SMALL_FONT_TYPE)
     file_clear_button.grid(row=9, column=1, sticky="e")
 
     # check if wrong colors
