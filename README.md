@@ -96,13 +96,27 @@ The settings menu allows for the user to make modifications to the program's con
 * Input/Output Folder  
   * The input and output folder are where the program reads and writes from, respectively. Input will house the .csv file and converted .json that holds the player data. The .csv is downloaded from EscapeKit. Output will hold all output files. Both of these hold a `.gitkeep` file that keeps the file hierarchy in GitHub, it can removed manually if considered clutter.  
 * Resources Folder 
-   * This folder holds all of the python files that operate the program. These files are meant to be used in tandem and not standalone. `app_main.py` operates the main functionality of the main program's UI. `constants.py` hold all the default values of the program that **Restore Defaults** reads from. `file_parser.py` handles the initial converstion from the .csv file to the .json. `immutable_constants.py` holds the constants that are not modified by the program. `rate_display.py` handles the UI for the escape rates. `result_display.py` shows the ranking of groups from the most recent output search. `utils.py` holds basic functions that some of the prior files use.
+   * This folder holds all of the python files that operate the program. These files are meant to be used in tandem and not standalone. 
+   
+     `app_main.py` operates the main functionality of the main program's UI. 
+    
+     `constants.py` hold all the default values of the program that **Restore Defaults** reads from. 
+    
+     `file_parser.py` handles the initial converstion from the .csv file to the .json. 
+     
+     `immutable_constants.py` holds the constants that are not modified by the program. Modifyable at programmer's discretion.
+     
+     `rate_display.py` handles the UI for the escape rates. 
+     
+     `result_display.py` shows the ranking of groups from the most recent output search. 
+     
+     `utils.py` holds basic functions that some of the prior files use.
 * `.gitignore`  
    * GitHub support file to holds what files to ignore when uploading to the repository. It can be removed manually if considered clutter.
 * `config.json`
    * This file is created after running the program. This file holds all customizable settings in the **Advanced Settings** window that the user has modified.
 * `cache.json`
-   * This file holds a cache, currently limited to hold the last output file that was created. This is accessed by other resource files during runtime. 
+   * This file holds a cache, currently limited to hold the last **output file name** that was created as well as if the recent output contained a **sort filter**. This is accessed by other resource files during runtime. 
 * `main.py` 
    * Runs the program.
 * `README.md`
