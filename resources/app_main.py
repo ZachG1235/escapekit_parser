@@ -51,6 +51,9 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
         sort_key, sort_bool = sort_tuple
         sort_bool = not sort_bool # originally asked for least to greatest, inverting it is actually least to greatest
         found_data = dict(sorted(found_data.items(), key=lambda item: item[1][sort_key], reverse=sort_bool))
+        show_rank_bool_str = "true"
+    else:
+        show_rank_bool_str = "false"
 
     out_file_str = generate_outfile_str(key_tuples, sort_tuple)
     out_file_path = os.path.join(output_folder_path, out_file_str)
@@ -59,6 +62,7 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
         out_file.write(json.dumps(found_data, indent=4))
     
     write_to_cache(CACHE_CURRENT_OUTPUT_KEY, out_file_str)
+    write_to_cache(CACHE_SHOW_RANK_KEY, show_rank_bool_str)
 
     return (len(found_data), out_file_str)
         
@@ -388,13 +392,15 @@ def tk_main():
 
     def open_file():
         file_name = get_value_from_cache(CACHE_CURRENT_OUTPUT_KEY)
+        show_rank = get_value_from_cache(CACHE_SHOW_RANK_KEY) == "true"
+
         config_path = os.path.join(CONFIG_FILE_NAME)
         with open(config_path, 'r') as config_info:
             data = json.load(config_info)
         max_displayed_entries = data["MAX_DISPLAYABLE_ENTRIES"]
         try:
             if isinstance(int(max_displayed_entries), int):
-                show_results(file_name)
+                show_results(file_name, show_rank)
         except ValueError:
             set_result_status(format_output_str(INVALID_DISPLAY_INTEGER_STR, max_displayed_entries), result_label)
         
