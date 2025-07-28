@@ -41,6 +41,13 @@ DEL_FILES_ONE_FILE_STR = ";;; file ending in \".json\" in directory \";;;\" was 
 DEL_FILES_MULT_FILES_STR = ";;; files ending in \".json\" in directory \";;;\" were found and deleted."
 INVALID_DISPLAY_INTEGER_STR = "Error: \";;;\" is not a valid integer. Please change in settings."
 
-
 # utils
 UTILS_UNIDENTIFYABLE_ROOM_NAME_STR = "N/A"
+
+# fonts!
+VERY_SMALL_FONT_TYPE = ("Sitka Small", 8)
+SMALL_FONT_TYPE = ("Sitka Small", 9)
+MEDIUM_FONT_TYPE = ("Sitka Small", 10)
+LARGE_FONT_TYPE = ("Sitka Small", 11)
+VERY_LARGE_FONT_TYPE = ("Sitka Small", 13)
+HUGE_FONT_TYPE = ("Sitka Small", 15)
