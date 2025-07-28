@@ -145,16 +145,16 @@ With that being said, clicking on the hyperlink button will give you all the hid
 
 ## Blog/Inspiration
 ### Why did I create this project? 
-text  
+I made this project for a couple of reasons. One day, I was asked by a customer, "Are we the fastest group of two that had finished that room?" and I really wanted to give them an answer. I wanted to also say to them "Yeah! You're the fastest group I've ever had!" but I didn't even know if that was true. Since EscapeKit doesn't have an option to filter by individual Game Masters, I really wanted to create a program that did it for me. Another answer to this question is that I really wanted to create a bigger project that I could be proud of. From my understanding, EscapeKit doesn't offer this information and I wanted to be of use! Finally, another answer to this question is simple: I was bored!
 
 ### What is the end goal? 
-text
+I wanted a easy-to-use while also easily customizable system for employees, especially employees at my work, to sort and view customer records.  
 
 ### Did I meet those goals?
-text
+I believe I met this goal. I'm not sure about other businesses that have a different quantity of Game Masters, rooms, and other such information, but it's a solid start!
 
 ### How long did this take?
-text
+I started this project back towards the beginning of June of 2025. I am concluding my work towards the end of July 2025. So 2 months! I'm kind of working on it on and off, but I think I'm tapering down my activity.
 
 
 Final Remarks
