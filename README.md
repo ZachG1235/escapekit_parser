@@ -4,7 +4,7 @@ Welcome to a Python EscapeKit Parser made by @ZachG1235 on Github. This was a fu
 ## Setup Instructions 
 
 ### Download this Program
-1. On Github, download the **latest release** of this Program.
+1. On Github, download the [**latest release**](https://github.com/ZachG1235/escapekit_parser/releases/tag/v1.0.0) of this Program.
 
 2. Once downloaded, extract it in a **suitable location**.
 
