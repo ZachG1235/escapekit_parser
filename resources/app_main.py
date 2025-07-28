@@ -68,15 +68,20 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
 
     if len(sort_tuple) > 0:
         sort_key, sort_bool = sort_tuple
-        sort_bool = not sort_bool # originally asked for least to greatest, inverting it is actually least to greatest
+
         if sort_key == "time_remaining":
-            found_data = dict(sorted(found_data.items(), key=lambda item: parse_time_remaining(item[1][sort_key]), reverse=sort_bool))
+            # originally asked for least to greatest, inverting it is actually least to greatest
+            found_data = dict(sorted(found_data.items(), key=lambda item: parse_time_remaining(item[1][sort_key]), reverse=(not sort_bool)))
         elif sort_key == "game_master":
-            # alphabetically is backwards. reflip the boolean.
-            sort_bool = not sort_bool
+            # alphabetically is backwards. keep the boolean
             found_data = dict(sorted(found_data.items(), key=lambda item: parse_game_master_sort(item[1][sort_key], sort_bool), reverse=sort_bool))
-        else:
+        elif sort_key == "room":
+            # alphabetically is backwards. keep the boolean
             found_data = dict(sorted(found_data.items(), key=lambda item: item[1][sort_key], reverse=sort_bool))
+        elif sort_key == "group_size":
+            # originally asked for least to greatest, inverting it is actually least to greatest
+            found_data = dict(sorted(found_data.items(), key=lambda item: item[1][sort_key], reverse=(not sort_bool)))
+
         show_rank_bool_str = "true"
     else:
         show_rank_bool_str = "false"
