@@ -232,6 +232,7 @@ def output_bad_colors(wrong_colors, label):
 def tk_main():
     root = tk.Tk()
     root.title("EscapeKit Parser: Made by ZachG1235")
+    root.iconbitmap("icons/ekp_transparent.ico")
     for i in range(0, 10):
         root.grid_rowconfigure(i, minsize=55)
     for j in range(0, 2):

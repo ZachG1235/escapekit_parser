@@ -1,5 +1,6 @@
-# EscapeKit Parser 
+# ![Ekp-Logo](icons/ekp_transparent.png) EscapeKit Parser 
 Welcome to a Python EscapeKit Parser made by @ZachG1235 on Github. This was a fun personal project of mine and I'm happy to have finished it.
+
 
 ## Setup Instructions 
 
@@ -111,6 +112,8 @@ The settings menu allows for the user to make modifications to the program's con
      `result_display.py` shows the ranking of groups from the most recent output search. 
      
      `utils.py` holds basic functions that some of the prior files use.
+* `icons`
+   * Holds pictures to help support this file as well as the running program.  
 * `.gitignore`  
    * GitHub support file to holds what files to ignore when uploading to the repository. It can be removed manually if considered clutter.
 * `config.json`
