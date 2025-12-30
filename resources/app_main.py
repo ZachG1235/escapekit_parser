@@ -8,7 +8,7 @@ from .rate_display import escaperate_display
 from .utils import get_room_names, get_value_from_cache, write_to_cache, format_output_str, ParsedFileExistenceError, InputFileExistenceError
 
 
-def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
+def search_and_sort(key_tuples : list, sort_tuple : tuple, trend_override=False) -> tuple:
     # initialize constants
     config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
@@ -86,7 +86,7 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
     else:
         show_rank_bool_str = "false"
 
-    out_file_str = generate_outfile_str(key_tuples, sort_tuple)
+    out_file_str = generate_outfile_str(key_tuples, sort_tuple, trend_override)
     out_file_path = os.path.join(output_folder_path, out_file_str)
     
     with open(f"{out_file_path}.json", 'w') as out_file:
@@ -98,7 +98,7 @@ def search_and_sort(key_tuples : list, sort_tuple : tuple) -> tuple:
     return (len(found_data), out_file_str)
         
 
-def generate_outfile_str(key_tuples : list, sort_tuple : tuple) -> str:
+def generate_outfile_str(key_tuples : list, sort_tuple : tuple, trend_override=False) -> str:
     # initialize constants
     config_path = os.path.join(CONFIG_FILE_NAME)
     with open(config_path, 'r') as config_info:
@@ -106,8 +106,9 @@ def generate_outfile_str(key_tuples : list, sort_tuple : tuple) -> str:
     generate_unique_outfile_name_bool = "True" == data["GENERATE_UNIQUE_OUTFILE_NAME"] 
     outfile_abbreviations_dict = data["OUTFILE_ABBREVIATIONS"]
 
-    
-    if not generate_unique_outfile_name_bool:
+    if trend_override:
+        return "trends"
+    elif not generate_unique_outfile_name_bool:
         return "output"
     elif len(key_tuples) == 0 and len(sort_tuple) == 0:
         time_now = datetime.datetime.now()
@@ -775,7 +776,6 @@ def tk_main():
                                      command=open_file, 
                                          bg=accessed_color,
                                              font=VERY_SMALL_FONT_TYPE)
-    
     # open_file_button will grid when valid output is received
 
     valid_color, accessed_color = is_valid_color(root, escaperate_btn_color_str)
