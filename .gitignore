@@ -8,5 +8,6 @@ __pycache__
 
 # files
 tempCodeRunner.py
+notes.txt
 config.json
 cache.json
