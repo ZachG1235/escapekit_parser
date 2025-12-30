@@ -7,13 +7,6 @@ from resources.file_parser import update_escape_groups
 import tkinter as tk
 from tkcalendar import DateEntry
 
-# only accepts positive integers (0 inclusive)
-def ask_int_question(query_str : str) -> int:
-    user_str = input(query_str).strip()
-    while not user_str.isdigit():
-        user_str = input(f"Input invalid. {query_str}").strip()
-    return int(user_str)
-
 def parse_dates(input_path : Path, before_date : datetime, after_date : datetime):
     trends_dict = {}
 
